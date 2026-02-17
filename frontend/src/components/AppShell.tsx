@@ -638,25 +638,27 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
         </div>
       )}
 
-      <nav className="md:hidden fixed bottom-1 left-1/2 -translate-x-1/2 z-40 border border-slate-200/70 rounded-2xl bg-white/65 backdrop-blur-xl shadow-[0_14px_30px_-18px_rgba(15,23,42,0.62)]">
-        <div className="grid grid-cols-3 gap-0.5 px-0.5 py-0.5 min-w-[112px]">
+      <nav className="md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-white/35 backdrop-blur-2xl border border-white/40 shadow-[0_18px_40px_-24px_rgba(15,23,42,0.55)]">
+        <div className="grid grid-cols-3 gap-1 px-1.5 py-1.5 min-w-[180px]">
           {MOBILE_NAV_ITEMS.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className={`relative flex flex-col items-center justify-center rounded-md py-0.5 transition ${
-                isActive(item) ? 'text-blue-700 bg-blue-50 shadow-[inset_0_0_0_1px_rgba(37,99,235,0.18)]' : 'text-slate-600'
+              className={`relative flex flex-col items-center justify-center rounded-2xl py-1.5 transition ${
+                isActive(item)
+                  ? 'text-blue-800 bg-white/55 shadow-[inset_0_0_0_1px_rgba(37,99,235,0.20)]'
+                  : 'text-slate-700 hover:bg-white/35'
               }`}
             >
-              <item.icon size={12} />
-              <span className="text-[8px] leading-none">{item.label.split(' ')[0]}</span>
+              <item.icon size={18} />
+              <span className="text-[10px] leading-none mt-0.5">{item.label.split(' ')[0]}</span>
               {item.to === '/groups' && pendingGroupsActionCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 inline-flex min-w-[12px] h-[12px] items-center justify-center rounded-full bg-red-500 px-1 text-[7px] text-white">
+                <span className="absolute top-1 right-1 inline-flex min-w-[16px] h-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] text-white">
                   {pendingGroupsActionCount > 9 ? '9+' : pendingGroupsActionCount}
                 </span>
               )}
               {item.to === '/profile' && pendingResetRequestsCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 inline-flex min-w-[12px] h-[12px] items-center justify-center rounded-full bg-red-500 px-1 text-[7px] text-white">
+                <span className="absolute top-1 right-1 inline-flex min-w-[16px] h-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] text-white">
                   {pendingResetRequestsCount > 9 ? '9+' : pendingResetRequestsCount}
                 </span>
               )}
