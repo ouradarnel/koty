@@ -282,7 +282,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
-      <div className="md:hidden bg-white/55 backdrop-blur-xl border border-slate-200/60 rounded-b-2xl shadow-[0_10px_28px_-22px_rgba(15,23,42,0.55)] sticky top-0 z-40 px-2 py-1 flex items-center justify-between mx-1 mt-1">
+      <div className="md:hidden bg-white/45 backdrop-blur-2xl border border-white/40 rounded-b-2xl shadow-[0_10px_28px_-22px_rgba(15,23,42,0.5)] sticky top-0 z-40 px-2.5 py-1.5 flex items-center justify-between mx-1 mt-1">
         <button
           onClick={() => setMobileOpen(true)}
           className="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 active:scale-95 active:shadow-inner transition"
@@ -295,8 +295,8 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
           className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-slate-100 transition"
           aria-label="Ouvrir la navigation"
         >
-          <img src={LogoKoty} alt="Koty Logo" className="w-7 h-7 rounded-lg object-cover" />
-          <span className="font-extrabold text-[12px] tracking-tight text-slate-900">
+          <img src={LogoKoty} alt="Koty Logo" className="w-8 h-8 rounded-xl object-cover" />
+          <span className="font-extrabold text-[13px] tracking-tight text-slate-900">
             Koty<span className="text-blue-600">.</span>
           </span>
         </button>
@@ -640,20 +640,20 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
         </div>
       )}
 
-      <nav className="md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-white/35 backdrop-blur-2xl border border-white/40 shadow-[0_18px_40px_-24px_rgba(15,23,42,0.55)]">
-        <div className="grid grid-cols-4 gap-1 px-1.5 py-1.5 min-w-[240px]">
+      <nav className="md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-white/25 backdrop-blur-2xl border border-white/35 shadow-[0_18px_40px_-24px_rgba(15,23,42,0.5)]">
+        <div className="grid grid-cols-4 gap-1 px-2 py-2 min-w-[248px]">
           {MOBILE_NAV_ITEMS.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className={`relative flex flex-col items-center justify-center rounded-2xl py-1.5 transition ${
+              className={`relative flex flex-col items-center justify-center rounded-2xl py-2 transition ${
                 isActive(item)
-                  ? 'text-blue-800 bg-white/55 shadow-[inset_0_0_0_1px_rgba(37,99,235,0.20)]'
+                  ? 'text-blue-900 bg-white/50 shadow-[inset_0_0_0_1px_rgba(37,99,235,0.22)]'
                   : 'text-slate-700 hover:bg-white/35'
               }`}
             >
-              <item.icon size={18} />
-              <span className="text-[10px] leading-none mt-0.5">{item.label.split(' ')[0]}</span>
+              <item.icon size={20} />
+              <span className="text-[11px] leading-none mt-0.5">{item.label.split(' ')[0]}</span>
               {item.to === '/groups' && pendingGroupsActionCount > 0 && (
                 <span className="absolute top-1 right-1 inline-flex min-w-[16px] h-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] text-white">
                   {pendingGroupsActionCount > 9 ? '9+' : pendingGroupsActionCount}
