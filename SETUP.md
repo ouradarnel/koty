@@ -480,6 +480,7 @@ cp .env.example .env
 Je configure `backend/.env`:
 - `NODE_ENV="production"`
 - `PORT=3000`
+- `HOST=127.0.0.1` (recommandé derrière Nginx)
 - `CORS_ORIGIN="http://<IP_PUBLIQUE_OU_DOMAINE>"`
 - `JWT_SECRET` et `JWT_REFRESH_SECRET` forts
 - `DATABASE_URL` (attention aux caractères spéciaux)

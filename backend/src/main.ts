@@ -83,9 +83,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const port = configService.get<number>('PORT', 3000);
-  await app.listen(port);
+  // In production behind Nginx, we bind to localhost by default.
+  const host = configService.get<string>('HOST', nodeEnv === 'production' ? '127.0.0.1' : '0.0.0.0');
+  await app.listen(port, host);
 
-  logger.log(`API running on http://localhost:${port}/api`);
+  logger.log(`API running on http://${host === '0.0.0.0' ? 'localhost' : host}:${port}/api`);
 }
 
 bootstrap();
