@@ -454,3 +454,123 @@ En cas de problème :
 ---
 
 **Bon développement.**
+
+---
+
+## 🌍 Déploiement sur VM (Nginx + Node + systemd, sans Docker)
+
+Objectif:
+- Backend NestJS écoute sur `127.0.0.1:3000`
+- Nginx sert `frontend/dist` et proxy `/api/` vers `127.0.0.1:3000`
+
+### 1) Préparer l'OS
+
+```bash
+sudo apt-get update
+sudo apt-get install -y nginx
+```
+
+### 2) Backend (production)
+
+```bash
+cd ~/koty/backend
+cp .env.example .env
+```
+
+Je configure `backend/.env`:
+- `NODE_ENV="production"`
+- `PORT=3000`
+- `CORS_ORIGIN="http://<IP_PUBLIQUE_OU_DOMAINE>"`
+- `JWT_SECRET` et `JWT_REFRESH_SECRET` forts
+- `DATABASE_URL` (attention aux caractères spéciaux)
+
+Note DB: si ton mot de passe Postgres contient `@`, il faut l'encoder en `%40` dans l'URL.
+Exemple:
+```env
+DATABASE_URL="postgresql://koty_user:Juliette224%40@localhost:5432/koty_db?schema=public"
+```
+
+Build + migrations:
+```bash
+npm ci
+npm run prisma:generate
+npx prisma migrate deploy
+npm run build
+```
+
+### 3) systemd (backend en service)
+
+Template: `ops/systemd/koty-backend.service` (à adapter).
+
+```bash
+sudo cp ~/koty/ops/systemd/koty-backend.service /etc/systemd/system/koty-backend.service
+sudo nano /etc/systemd/system/koty-backend.service
+```
+
+Je remplace:
+- `User=<user>` par mon user linux
+- les chemins `/home/<user>/...` si besoin
+- `ExecStart=/usr/bin/node ...` si `which node` n'est pas `/usr/bin/node`
+
+Activation:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now koty-backend
+sudo systemctl status koty-backend --no-pager
+```
+
+Vérif:
+```bash
+curl -fsS http://127.0.0.1:3000/api/health
+```
+
+Logs:
+```bash
+sudo journalctl -u koty-backend -f
+```
+
+### 4) Frontend (build)
+
+Le plus simple en prod: servir l'API sur le même domaine via Nginx, donc `VITE_API_URL=/api`.
+
+```bash
+cd ~/koty/frontend
+npm ci
+echo "VITE_API_URL=/api" > .env.production.local
+npm run build
+```
+
+### 5) Nginx (frontend + reverse proxy)
+
+Template: `ops/nginx/koty.conf` (à adapter).
+
+```bash
+sudo cp ~/koty/ops/nginx/koty.conf /etc/nginx/sites-available/koty
+sudo nano /etc/nginx/sites-available/koty
+sudo ln -sf /etc/nginx/sites-available/koty /etc/nginx/sites-enabled/koty
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+Vérifs:
+```bash
+curl -I http://127.0.0.1/
+curl -fsS http://127.0.0.1/api/health
+```
+
+### 6) Pare-feu GCP
+
+Il faut autoriser `tcp:80` (et `443` si HTTPS) côté **VPC Firewall**.
+
+Dans Cloud Shell:
+```bash
+gcloud projects list
+gcloud config set project <PROJECT_ID>
+
+gcloud compute firewall-rules create koty-allow-http \
+  --network=default --allow=tcp:80 --source-ranges=0.0.0.0/0
+```
+
+Ensuite j'ouvre dans le navigateur:
+`http://<IP_PUBLIQUE>/`

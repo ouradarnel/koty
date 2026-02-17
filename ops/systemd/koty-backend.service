@@ -1,0 +1,25 @@
+[Unit]
+Description=Koty API (NestJS)
+After=network.target
+
+[Service]
+Type=simple
+
+# Adapte ces chemins à ta VM.
+User=<user>
+WorkingDirectory=/home/<user>/koty/backend
+EnvironmentFile=/home/<user>/koty/backend/.env
+
+# Si Node n'est pas dans /usr/bin/node, remplace par `which node`.
+ExecStart=/usr/bin/node dist/src/main.js
+
+Restart=on-failure
+RestartSec=3
+
+# Logs dans journalctl (stdout/stderr)
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
