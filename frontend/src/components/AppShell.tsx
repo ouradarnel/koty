@@ -640,20 +640,20 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
         </div>
       )}
 
-      <nav className="md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-white/25 backdrop-blur-2xl border border-white/35 shadow-[0_18px_40px_-24px_rgba(15,23,42,0.5)]">
-        <div className="grid grid-cols-4 gap-1 px-2 py-2 min-w-[248px]">
+      <nav className="md:hidden fixed bottom-2.5 left-1/2 -translate-x-1/2 z-40 rounded-[26px] bg-white/18 backdrop-blur-3xl border border-white/30 shadow-[0_22px_50px_-30px_rgba(15,23,42,0.5)]">
+        <div className="grid grid-cols-4 gap-1.5 px-2.5 py-2.5 min-w-[272px]">
           {MOBILE_NAV_ITEMS.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className={`relative flex flex-col items-center justify-center rounded-2xl py-2 transition ${
+              className={`relative flex flex-col items-center justify-center rounded-[18px] py-2.5 transition ${
                 isActive(item)
-                  ? 'text-blue-900 bg-white/50 shadow-[inset_0_0_0_1px_rgba(37,99,235,0.22)]'
-                  : 'text-slate-700 hover:bg-white/35'
+                  ? 'text-blue-950 bg-white/40 shadow-[inset_0_0_0_1px_rgba(37,99,235,0.22)]'
+                  : 'text-slate-800 hover:bg-white/25'
               }`}
             >
-              <item.icon size={20} />
-              <span className="text-[11px] leading-none mt-0.5">{item.label.split(' ')[0]}</span>
+              <item.icon size={22} />
+              <span className="text-[12px] leading-none mt-0.5">{item.label.split(' ')[0]}</span>
               {item.to === '/groups' && pendingGroupsActionCount > 0 && (
                 <span className="absolute top-1 right-1 inline-flex min-w-[16px] h-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] text-white">
                   {pendingGroupsActionCount > 9 ? '9+' : pendingGroupsActionCount}
