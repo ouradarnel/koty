@@ -290,10 +290,10 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
         </button>
         <button
           onClick={() => setMobileOpen(true)}
-          className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md hover:bg-slate-100 transition"
+          className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-slate-100 transition"
           aria-label="Ouvrir la navigation"
         >
-          <img src={LogoKoty} alt="Koty Logo" className="w-6 h-6 rounded-md object-cover" />
+          <img src={LogoKoty} alt="Koty Logo" className="w-7 h-7 rounded-lg object-cover" />
           <span className="font-extrabold text-[12px] tracking-tight text-slate-900">
             Koty<span className="text-blue-600">.</span>
           </span>
