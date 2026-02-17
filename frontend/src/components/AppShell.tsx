@@ -294,7 +294,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
           aria-label="Ouvrir la navigation"
         >
           <img src={LogoKoty} alt="Koty Logo" className="w-6 h-6 rounded-md object-cover" />
-          <span className="font-extrabold text-[11px] tracking-tight text-slate-900">
+          <span className="font-extrabold text-[12px] tracking-tight text-slate-900">
             Koty<span className="text-blue-600">.</span>
           </span>
         </button>
@@ -313,8 +313,8 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
           <aside className="relative w-fit min-w-[148px] max-w-[160px] h-[calc(100%-0.5rem)] mt-1 ml-1 bg-white/70 backdrop-blur-2xl border border-slate-200/60 rounded-2xl shadow-[0_18px_45px_-24px_rgba(15,23,42,0.62)] flex flex-col animate-in slide-in-from-left duration-300 overflow-hidden">
             <div className="p-3 border-b border-slate-200/70 flex items-center justify-between bg-gradient-to-r from-white/35 to-slate-100/20">
               <div>
-                <p className="font-semibold text-[11px] text-slate-900 truncate max-w-[82px]">{user.name}</p>
-                <p className="text-[8px] text-slate-500 truncate max-w-[82px]">{user.email}</p>
+                <p className="font-semibold text-[12px] text-slate-900 truncate max-w-[82px]">{user.name}</p>
+                <p className="text-[9px] text-slate-500 truncate max-w-[82px]">{user.email}</p>
               </div>
               <button
                 onClick={() => setMobileOpen(false)}
@@ -330,7 +330,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
                   key={item.to}
                   to={item.to}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center justify-between gap-1 px-1.5 py-1.5 rounded-lg text-[10px] font-medium transition-all ${
+                  className={`flex items-center justify-between gap-1 px-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all ${
                     isActive(item)
                       ? 'bg-blue-600 text-white shadow-[0_10px_18px_-12px_rgba(37,99,235,0.8)] ring-1 ring-blue-500/20'
                       : 'text-slate-600 hover:bg-slate-100/90'
@@ -355,7 +355,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
               <Link
                 to="/groups/new"
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-1 px-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all ${
+                className={`flex items-center gap-1 px-1.5 py-1.5 rounded-lg text-[12px] font-medium transition-all ${
                   isNewGroupActive
                     ? 'bg-blue-600 text-white shadow-[0_10px_18px_-12px_rgba(37,99,235,0.8)] ring-1 ring-blue-500/20'
                     : 'text-slate-600 hover:bg-slate-100/90'
@@ -367,7 +367,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
             <div className="p-2 border-t border-slate-200/70 bg-white/35">
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 w-full px-2 py-1.5 text-[11px] text-red-500 font-medium hover:bg-red-50 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 w-full px-2 py-1.5 text-[12px] text-red-500 font-medium hover:bg-red-50 rounded-lg transition-colors"
               >
                 <LogOut size={14} />
                 Déconnexion
@@ -406,7 +406,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
         <nav className="flex-1 p-3 space-y-2">
           <Link
             to="/groups/new"
-            className={`relative flex items-center ${collapsed ? 'justify-center px-2 py-2' : 'gap-3 px-3 py-2.5'} rounded-lg transition-all duration-200 ${
+            className={`relative flex items-center ${collapsed ? 'justify-center px-2 py-2' : 'gap-3 px-3 py-2.5'} rounded-lg text-[15px] transition-all duration-200 ${
               isNewGroupActive
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
                 : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'
@@ -414,14 +414,14 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
             title="Créer un groupe"
           >
             <span className="shrink-0 text-base leading-none">+</span>
-            {!collapsed && <span className="font-medium whitespace-nowrap text-sm">Nouveau groupe</span>}
+            {!collapsed && <span className="font-medium whitespace-nowrap">Nouveau groupe</span>}
           </Link>
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive: navIsActive }) => `
-                relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group
+                relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-[15px] transition-all duration-200 group
                 ${
                   navIsActive || isActive(item)
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
