@@ -1,0 +1,270 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================================
+// USERS & AUTHENTICATION
+// ========================================
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  firstName    String
+  lastName     String
+  name         String
+  isAdmin      Boolean  @default(false)
+  refreshToken String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  memberships GroupMember[]
+  payments    Payment[]
+  groupsCreated Group[] @relation("GroupCreatedBy")
+  sentGroupInvitations GroupInvitation[] @relation("GroupInvitedBy")
+  receivedGroupInvitations GroupInvitation[] @relation("GroupInvitee")
+  sentContributionInvitations ContributionInvitation[] @relation("ContributionInvitedBy")
+  receivedContributionInvitations ContributionInvitation[] @relation("ContributionInvitee")
+  passwordResetRequests PasswordResetRequest[] @relation("PasswordResetRequestedBy")
+  resolvedPasswordResetRequests PasswordResetRequest[] @relation("PasswordResetResolvedBy")
+
+  @@map("users")
+}
+
+enum PasswordResetRequestStatus {
+  PENDING
+  RESOLVED
+  REJECTED
+}
+
+model PasswordResetRequest {
+  id          String                     @id @default(uuid())
+  status      PasswordResetRequestStatus @default(PENDING)
+  note        String?                    @db.Text
+  createdAt   DateTime                   @default(now())
+  updatedAt   DateTime                   @updatedAt
+  resolvedAt  DateTime?
+
+  userId      String
+  user        User                       @relation("PasswordResetRequestedBy", fields: [userId], references: [id], onDelete: Cascade)
+  resolvedById String?
+  resolvedBy  User?                      @relation("PasswordResetResolvedBy", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([userId, status])
+  @@map("password_reset_requests")
+}
+
+// ========================================
+// GROUPS & MEMBERS
+// ========================================
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String
+  createdBy   User     @relation("GroupCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  members       GroupMember[]
+  contributions Contribution[]
+  invitations   GroupInvitation[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id       String   @id @default(uuid())
+  role     Role     @default(MEMBER)
+  joinedAt DateTime @default(now())
+  startDate DateTime @default(now())
+  endDate DateTime?
+
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  contributionMemberships ContributionMember[]
+
+  @@unique([userId, groupId])
+  @@map("group_members")
+}
+
+enum Role {
+  MEMBER
+  MANAGER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELED
+  EXPIRED
+}
+
+enum MemberStartMode {
+  CURRENT_PERIOD
+  NEXT_PERIOD
+  CATCH_UP
+}
+
+model GroupInvitation {
+  id          String           @id @default(uuid())
+  email       String
+  role        Role             @default(MEMBER)
+  startMode   MemberStartMode  @default(NEXT_PERIOD)
+  status      InvitationStatus @default(PENDING)
+  token       String           @unique
+  expiresAt   DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  respondedAt DateTime?
+
+  groupId     String
+  group       Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  invitedById String
+  invitedBy   User             @relation("GroupInvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
+  inviteeUserId String?
+  inviteeUser User?            @relation("GroupInvitee", fields: [inviteeUserId], references: [id], onDelete: SetNull)
+
+  @@index([groupId, status])
+  @@index([email, status])
+  @@map("group_invitations")
+}
+
+// ========================================
+// CONTRIBUTIONS (CAISSES)
+// ========================================
+
+model Contribution {
+  id          String    @id @default(uuid())
+  name        String
+  description String?   @db.Text
+  amount      Decimal   @db.Decimal(10, 2)
+  currency    String    // EUR, XOF, USD, etc.
+  frequency   Frequency
+  durationPeriods Int?
+  deadlineDate DateTime?
+  dueDay      Int       // Jour du mois (1-31)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  members  ContributionMember[]
+  periods  Period[]
+  payments Payment[]
+  invitations ContributionInvitation[]
+
+  @@map("contributions")
+}
+
+enum Frequency {
+  MONTHLY
+  QUARTERLY
+  DELAY
+}
+
+// Association entre un membre et une cotisation avec date de début
+model ContributionMember {
+  id        String    @id @default(uuid())
+  startDate DateTime  // Date à partir de laquelle le membre doit cotiser
+  endDate   DateTime? // Optionnel : date de fin si le membre quitte
+  createdAt DateTime  @default(now())
+
+  contributionId String
+  contribution   Contribution @relation(fields: [contributionId], references: [id], onDelete: Cascade)
+
+  memberId String
+  member   GroupMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([contributionId, memberId])
+  @@map("contribution_members")
+}
+
+model ContributionInvitation {
+  id          String           @id @default(uuid())
+  email       String
+  startMode   MemberStartMode  @default(NEXT_PERIOD)
+  status      InvitationStatus @default(PENDING)
+  token       String           @unique
+  expiresAt   DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  respondedAt DateTime?
+
+  contributionId String
+  contribution   Contribution @relation(fields: [contributionId], references: [id], onDelete: Cascade)
+  invitedById    String
+  invitedBy      User         @relation("ContributionInvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
+  inviteeUserId  String?
+  inviteeUser    User?        @relation("ContributionInvitee", fields: [inviteeUserId], references: [id], onDelete: SetNull)
+
+  @@index([contributionId, status])
+  @@index([email, status])
+  @@map("contribution_invitations")
+}
+
+// ========================================
+// PERIODS (PÉRIODES DE COTISATION)
+// ========================================
+
+model Period {
+  id      String   @id @default(uuid())
+  month   Int      // 1-12
+  year    Int      // 2026, 2027, etc.
+  amount  Decimal  @db.Decimal(10, 2) // Montant figé pour cette période
+  dueDate DateTime // Date d'échéance de cette période
+
+  contributionId String
+  contribution   Contribution @relation(fields: [contributionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([contributionId, month, year])
+  @@map("periods")
+}
+
+// ========================================
+// PAYMENTS (PAIEMENTS)
+// ========================================
+
+model Payment {
+  id          String        @id @default(uuid())
+  amount      Decimal       @db.Decimal(10, 2)
+  status      PaymentStatus @default(DECLARED)
+  proofUrl    String?       // URL de la preuve de paiement (optionnel)
+  note        String?       @db.Text
+  createdAt   DateTime      @default(now())
+  validatedAt DateTime?     // Date de validation par le gestionnaire
+  validatedBy String?       // ID du gestionnaire qui a validé
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  contributionId String
+  contribution   Contribution @relation(fields: [contributionId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  DECLARED // Déclaré par le membre, en attente de validation
+  APPROVED // Validé par le gestionnaire
+  REJECTED // Rejeté par le gestionnaire
+  DIRECT   // Paiement enregistré directement par le gestionnaire
+}
