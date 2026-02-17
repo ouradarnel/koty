@@ -8,6 +8,7 @@ import GroupDetailPage from './pages/GroupDetailPage';
 import ContributionDetailPage from './pages/ContributionDetailPage';
 import NewGroupPage from './pages/NewGroupPage';
 import ProfilePage from './pages/ProfilePage';
+import GuidePage from './pages/GuidePage';
 import ToastHost from './components/shared/ToastHost';
 
 function App() {
@@ -70,6 +71,12 @@ function App() {
           path="/profile"
           element={
             isAuthenticated ? <ProfilePage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/guide"
+          element={
+            isAuthenticated ? <GuidePage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
           }
         />
         <Route

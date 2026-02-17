@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Users,
   Bell,
+  BookOpen,
   LogOut,
   Menu,
   X,
@@ -46,6 +47,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard, exact: true },
   { label: 'Mes groupes', to: '/groups', icon: Users },
+  { label: 'Guide', to: '/guide', icon: BookOpen, exact: true },
   { label: 'Profil', to: '/profile', icon: User, exact: true },
 ];
 
@@ -639,7 +641,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
       )}
 
       <nav className="md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-white/35 backdrop-blur-2xl border border-white/40 shadow-[0_18px_40px_-24px_rgba(15,23,42,0.55)]">
-        <div className="grid grid-cols-3 gap-1 px-1.5 py-1.5 min-w-[180px]">
+        <div className="grid grid-cols-4 gap-1 px-1.5 py-1.5 min-w-[240px]">
           {MOBILE_NAV_ITEMS.map((item) => (
             <Link
               key={item.to}
