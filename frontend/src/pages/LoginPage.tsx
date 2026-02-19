@@ -120,32 +120,67 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
   return (
     <div className="min-h-screen relative overflow-hidden bg-slate-100">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-200/50 blur-3xl" />
-        <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-slate-300/40 blur-3xl" />
+        <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-200/55 blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 h-56 w-56 rounded-full bg-sky-200/40 blur-3xl" />
+        <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-slate-300/45 blur-3xl" />
       </div>
 
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md">
-          <div className="glass-panel-strong p-6 sm:p-8">
+        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-5 items-stretch">
+          <section className="hidden lg:block animate-fade-up-soft">
+            <div className="h-full rounded-3xl border border-white/65 bg-gradient-to-br from-blue-600/90 via-sky-600/85 to-indigo-700/85 text-white shadow-[0_30px_70px_-40px_rgba(15,23,42,0.9)] p-7 xl:p-8">
+              <p className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+                <img src={LogoKoty} alt="Koty Logo" className="w-5 h-5 rounded-md object-cover bg-white/90" />
+                Bienvenue sur Koty
+              </p>
+              <h1 className="mt-4 text-3xl xl:text-4xl font-extrabold tracking-tight leading-tight">
+                Gérez vos cotisations
+                <br />
+                sans friction.
+              </h1>
+              <p className="mt-3 text-sm text-blue-100 leading-relaxed max-w-md">
+                Créez vos groupes, invitez les membres, suivez les retards et validez les paiements en quelques clics.
+              </p>
+
+              <div className="mt-7 space-y-3">
+                <div className="rounded-2xl bg-white/18 border border-white/25 px-4 py-3 backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-wide text-blue-100">Clarté</p>
+                  <p className="mt-1 text-sm font-semibold">Vue simplifiée puis détail complet selon ton besoin.</p>
+                </div>
+                <div className="rounded-2xl bg-white/18 border border-white/25 px-4 py-3 backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-wide text-blue-100">Contrôle</p>
+                  <p className="mt-1 text-sm font-semibold">Notifications des actions à traiter avec accès direct.</p>
+                </div>
+                <div className="rounded-2xl bg-white/18 border border-white/25 px-4 py-3 backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-wide text-blue-100">Fiabilité</p>
+                  <p className="mt-1 text-sm font-semibold">Suivi précis des soldes: à jour, retard ou avance.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="glass-panel-strong p-6 sm:p-8 animate-fade-up-soft">
             <div className="mb-6">
-              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-600">
-                <img src={LogoKoty} alt="Koty Logo" className="w-7 h-7 rounded-md object-cover" />
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
+                <img src={LogoKoty} alt="Koty Logo" className="w-8 h-8 rounded-lg object-cover" />
                 <span className="font-extrabold text-slate-900 normal-case tracking-tight">
                   Koty<span className="text-blue-600">.</span>
                 </span>
               </p>
-              <h2 className="mt-2 text-2xl font-extrabold text-slate-900">Connexion</h2>
-              <p className="mt-1 text-sm text-slate-600">Accédez à vos groupes et suivez vos cotisations en temps réel.</p>
+              <h2 className="mt-2 text-3xl font-extrabold text-slate-900 tracking-tight">Connexion</h2>
+              <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">
+                Accède à tes groupes, tes cotisations et tes actions en attente.
+              </p>
             </div>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
               {notice && (
-                <div className="glass-surface p-3 text-sm text-blue-800">
+                <div className="glass-surface p-3 text-sm text-blue-800 border-blue-200/70">
                   {notice}
                 </div>
               )}
               {error && (
-                <div className="glass-surface p-3 text-sm text-red-700">
+                <div className="glass-surface p-3 text-sm text-red-700 border-red-200/70 animate-shake-soft">
                   {error}
                 </div>
               )}
@@ -162,7 +197,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
                     type="email"
                     autoComplete="email"
                     required
-                    className="glass-input w-full rounded-lg pl-9 pr-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="glass-input w-full rounded-xl pl-10 pr-3 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="exemple@email.com"
                     value={email}
                     onChange={(e) => {
@@ -185,7 +220,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
                     required
-                    className="glass-input w-full rounded-lg pl-9 pr-10 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="glass-input w-full rounded-xl pl-10 pr-10 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Votre mot de passe"
                     value={password}
                     onChange={(e) => {
@@ -208,7 +243,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="mt-2 w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="mt-2 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_16px_28px_-18px_rgba(37,99,235,0.9)]"
               >
                 {isLoading ? 'Connexion...' : 'Se connecter'}
               </button>

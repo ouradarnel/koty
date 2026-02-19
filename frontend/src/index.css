@@ -75,3 +75,37 @@
     @apply border border-white/55 bg-white/70 backdrop-blur-sm;
   }
 }
+
+@layer utilities {
+  @keyframes fade-up-soft {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shake-soft {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-4px);
+    }
+    75% {
+      transform: translateX(4px);
+    }
+  }
+
+  .animate-fade-up-soft {
+    animation: fade-up-soft 360ms ease-out;
+  }
+
+  .animate-shake-soft {
+    animation: shake-soft 320ms ease-in-out;
+  }
+}
