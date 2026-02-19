@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { authService } from '@/services/auth.service';
 import { usersService } from '@/services/users.service';
 import LogoKoty from '@/assets/logo-koty-icon.webp';
+import { getApiErrorMessage } from '@/lib/api-error';
+import { trackEvent } from '@/lib/analytics';
 
 interface LoginPageProps {
   onAuthenticated: () => void;
@@ -13,18 +14,6 @@ interface LoginPageProps {
 interface LoginPageLocationState {
   prefillEmail?: string;
   notice?: string;
-}
-
-function getFrenchAuthMessage(message: string | undefined, fallback: string): string {
-  if (!message) return fallback;
-  const lower = message.toLowerCase();
-
-  if (lower.includes('invalid credentials')) return 'Email ou mot de passe incorrect.';
-  if (lower.includes('access denied')) return 'Accès refusé.';
-  if (lower.includes('email already exists')) return 'Vous avez déjà un compte.';
-  if (lower.includes('first name and last name are required')) return 'Le prénom et le nom sont requis.';
-
-  return message;
 }
 
 export default function LoginPage({ onAuthenticated }: LoginPageProps) {
@@ -41,7 +30,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
   useEffect(() => {
     const sessionError = localStorage.getItem('auth_error');
     if (sessionError) {
-      setError(getFrenchAuthMessage(sessionError, 'Échec de la connexion'));
+      setError(sessionError);
       localStorage.removeItem('auth_error');
     }
   }, []);
@@ -71,19 +60,15 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
 
     try {
       const response = await authService.login(email, password);
+      trackEvent('auth_login_success', { emailDomain: email.split('@')[1] || '' });
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
       localStorage.setItem('user', JSON.stringify(response.user));
       onAuthenticated();
       navigate('/dashboard');
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message;
-        const normalizedMessage = Array.isArray(message) ? message.join(', ') : message;
-        setError(getFrenchAuthMessage(normalizedMessage, 'Échec de la connexion'));
-      } else {
-        setError('Échec de la connexion');
-      }
+      trackEvent('auth_login_failed', { emailDomain: email.split('@')[1] || '' });
+      setError(getApiErrorMessage(err, 'Échec de la connexion'));
     } finally {
       setIsLoading(false);
     }
@@ -103,15 +88,11 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
     setResetRequestLoading(true);
     try {
       const response = await usersService.requestPasswordReset(email.trim());
+      trackEvent('auth_password_reset_request_sent', { emailDomain: email.split('@')[1] || '' });
       setNotice(response.message || 'Demande envoyée aux administrateurs.');
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message;
-        const normalizedMessage = Array.isArray(message) ? message.join(', ') : message;
-        setError(getFrenchAuthMessage(normalizedMessage, "Impossible d'envoyer la demande pour le moment."));
-      } else {
-        setError("Impossible d'envoyer la demande pour le moment.");
-      }
+      trackEvent('auth_password_reset_request_failed', { emailDomain: email.split('@')[1] || '' });
+      setError(getApiErrorMessage(err, "Impossible d'envoyer la demande pour le moment."));
     } finally {
       setResetRequestLoading(false);
     }

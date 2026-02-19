@@ -2,21 +2,12 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { authService } from '@/services/auth.service';
+import { getApiErrorMessage } from '@/lib/api-error';
+import { trackEvent } from '@/lib/analytics';
+import LogoKoty from '@/assets/logo-koty-icon.webp';
 
 interface RegisterPageProps {
   onAuthenticated: () => void;
-}
-
-function getFrenchAuthMessage(message: string | undefined, fallback: string): string {
-  if (!message) return fallback;
-  const lower = message.toLowerCase();
-
-  if (lower.includes('invalid credentials')) return 'Email ou mot de passe incorrect.';
-  if (lower.includes('access denied')) return 'Accès refusé.';
-  if (lower.includes('email already exists')) return 'Vous avez déjà un compte.';
-  if (lower.includes('first name and last name are required')) return 'Le prénom et le nom sont requis.';
-
-  return message;
 }
 
 export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
@@ -52,6 +43,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
 
     try {
       const response = await authService.register(email, password, firstName.trim(), lastName.trim());
+      trackEvent('auth_register_success', { emailDomain: email.split('@')[1] || '' });
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
       localStorage.setItem('user', JSON.stringify(response.user));
@@ -59,6 +51,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
       navigate('/dashboard');
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
+        trackEvent('auth_register_failed', { emailDomain: email.split('@')[1] || '' });
         const message = err.response?.data?.message;
         const normalizedMessage = Array.isArray(message) ? message.join(', ') : (message ?? "Échec de l'inscription");
         const normalizedLower = normalizedMessage.toLowerCase();
@@ -68,6 +61,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
           normalizedLower.includes('email existe');
 
         if (isExistingEmailError) {
+          trackEvent('auth_register_existing_email_redirect', { emailDomain: email.split('@')[1] || '' });
           navigate('/login', {
             replace: true,
             state: {
@@ -78,8 +72,9 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
           return;
         }
 
-        setError(getFrenchAuthMessage(normalizedMessage, "Échec de l'inscription"));
+        setError(getApiErrorMessage(err, "Échec de l'inscription"));
       } else {
+        trackEvent('auth_register_failed', { emailDomain: email.split('@')[1] || '' });
         setError("Échec de l'inscription");
       }
     } finally {
@@ -88,27 +83,32 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[100dvh] relative overflow-hidden bg-slate-100 px-3 sm:px-6 lg:px-8 py-4 sm:py-12 pb-[max(env(safe-area-inset-bottom),1rem)]">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-200/45 blur-3xl" />
-        <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-slate-300/35 blur-3xl" />
+        <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-200/50 blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 h-56 w-56 rounded-full bg-sky-200/35 blur-3xl" />
+        <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-slate-300/40 blur-3xl" />
       </div>
-      <div className="relative z-10 max-w-md w-full space-y-8 mx-auto">
+      <div className="relative z-10 max-w-md w-full space-y-6 mx-auto">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Créer un compte
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Commencez à gérer vos cotisations
+          <p className="flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
+            <img src={LogoKoty} alt="Koty Logo" className="w-8 h-8 rounded-lg object-cover" />
+            <span className="font-extrabold text-slate-900 normal-case tracking-tight">
+              Koty<span className="text-blue-600">.</span>
+            </span>
+          </p>
+          <h2 className="mt-3 text-center text-[28px] sm:text-3xl font-extrabold text-slate-900 tracking-tight">Créer un compte</h2>
+          <p className="mt-1.5 text-center text-[13px] sm:text-sm text-slate-600">
+            Rejoins tes groupes et suis tes cotisations en temps réel.
           </p>
         </div>
-        <form className="glass-panel-strong mt-8 space-y-6 p-6 sm:p-8" onSubmit={handleSubmit}>
+        <form className="glass-panel-strong space-y-4 p-4 sm:p-8 animate-fade-up-soft" onSubmit={handleSubmit}>
           {error && (
-            <div className="glass-surface p-4">
+            <div className="glass-surface p-3 border-red-200/70 animate-shake-soft">
               <div className="text-sm text-red-800">{error}</div>
             </div>
           )}
-          <div className="rounded-md shadow-sm space-y-4">
+          <div className="rounded-md shadow-sm space-y-3.5">
             <div>
               <label htmlFor="firstName" className="sr-only">
                 Prénom
@@ -118,7 +118,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
                 name="firstName"
                 type="text"
                 required
-                className="glass-input appearance-none relative block w-full px-3 py-2 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="glass-input appearance-none relative block w-full px-3 py-3.5 text-base placeholder-gray-500 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Prénom"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -133,7 +133,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
                 name="lastName"
                 type="text"
                 required
-                className="glass-input appearance-none relative block w-full px-3 py-2 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="glass-input appearance-none relative block w-full px-3 py-3.5 text-base placeholder-gray-500 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Nom"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -149,7 +149,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
                 type="email"
                 autoComplete="email"
                 required
-                className="glass-input appearance-none relative block w-full px-3 py-2 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="glass-input appearance-none relative block w-full px-3 py-3.5 text-base placeholder-gray-500 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Adresse email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -164,7 +164,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
                 name="password"
                 type="password"
                 required
-                className="glass-input appearance-none relative block w-full px-3 py-2 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="glass-input appearance-none relative block w-full px-3 py-3.5 text-base placeholder-gray-500 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Mot de passe (min. 6 caractères)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -179,7 +179,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
                 name="confirmPassword"
                 type="password"
                 required
-                className="glass-input appearance-none relative block w-full px-3 py-2 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="glass-input appearance-none relative block w-full px-3 py-3.5 text-base placeholder-gray-500 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Confirmer le mot de passe"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -191,7 +191,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-base font-semibold rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 shadow-[0_16px_28px_-18px_rgba(37,99,235,0.9)]"
             >
               {isLoading ? 'Inscription...' : 'S\'inscrire'}
             </button>
@@ -200,7 +200,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
           <div className="text-center">
             <Link
               to="/login"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-semibold text-base sm:text-sm text-blue-600 hover:text-blue-500"
             >
               Déjà un compte ? Se connecter
             </Link>

@@ -11,6 +11,7 @@ import { paymentsService } from '@/services/payments.service';
 import { isManager } from '@/lib/group';
 import { getApiErrorMessage } from '@/lib/api-error';
 import { emitToast } from '@/lib/toast';
+import { trackEvent } from '@/lib/analytics';
 
 interface ContributionDetailPageProps {
   onLoggedOut: () => void;
@@ -288,11 +289,13 @@ export default function ContributionDetailPage({ onLoggedOut }: ContributionDeta
         note: note || undefined,
         proofUrl: proofUrl || undefined,
       });
+      trackEvent('payment_declared', { amount: parsedAmount, contributionId: contribution.id });
       setNote('');
       setProofUrl('');
       emitToast({ type: 'success', message: 'Paiement déclaré.' });
       await loadData();
     } catch (err: unknown) {
+      trackEvent('payment_declare_failed', { contributionId: contribution.id });
       emitToast({ type: 'error', message: getApiErrorMessage(err, 'Impossible de déclarer le paiement.') });
     } finally {
       setSubmitting(false);
@@ -303,9 +306,11 @@ export default function ContributionDetailPage({ onLoggedOut }: ContributionDeta
     setSubmitting(true);
     try {
       await paymentsService.validatePayment(paymentId, approve);
+      trackEvent('payment_validation_done', { contributionId: contribution.id, approved: approve });
       emitToast({ type: 'success', message: approve ? 'Paiement approuvé.' : 'Paiement refusé.' });
       await loadData();
     } catch (err: unknown) {
+      trackEvent('payment_validation_failed', { contributionId: contribution.id, approved: approve });
       emitToast({ type: 'error', message: getApiErrorMessage(err, 'Impossible de traiter ce paiement.') });
     } finally {
       setSubmitting(false);

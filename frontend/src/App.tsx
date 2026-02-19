@@ -1,15 +1,28 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';
-import GroupsPage from './pages/GroupsPage';
-import GroupDetailPage from './pages/GroupDetailPage';
-import ContributionDetailPage from './pages/ContributionDetailPage';
-import NewGroupPage from './pages/NewGroupPage';
-import ProfilePage from './pages/ProfilePage';
-import GuidePage from './pages/GuidePage';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import ToastHost from './components/shared/ToastHost';
+
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const GroupsPage = lazy(() => import('./pages/GroupsPage'));
+const GroupDetailPage = lazy(() => import('./pages/GroupDetailPage'));
+const ContributionDetailPage = lazy(() => import('./pages/ContributionDetailPage'));
+const NewGroupPage = lazy(() => import('./pages/NewGroupPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const GuidePage = lazy(() => import('./pages/GuidePage'));
+
+function RouteFallback() {
+  return (
+    <div className="min-h-screen bg-slate-100 px-4 py-8">
+      <div className="mx-auto max-w-5xl animate-pulse space-y-4">
+        <div className="h-10 w-48 rounded-xl bg-slate-200" />
+        <div className="h-28 rounded-2xl bg-slate-200" />
+        <div className="h-64 rounded-2xl bg-slate-200" />
+      </div>
+    </div>
+  );
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!localStorage.getItem('accessToken'));
@@ -30,63 +43,65 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route
-          path="/login"
-          element={
-            !isAuthenticated ? <LoginPage onAuthenticated={handleAuthenticated} /> : <Navigate to="/dashboard" replace />
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            !isAuthenticated ? <RegisterPage onAuthenticated={handleAuthenticated} /> : <Navigate to="/dashboard" replace />
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            isAuthenticated ? <DashboardPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
-          }
-        />
-        <Route
-          path="/groups"
-          element={
-            isAuthenticated ? <GroupsPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
-          }
-        />
-        <Route
-          path="/groups/new"
-          element={
-            isAuthenticated ? <NewGroupPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
-          }
-        />
-        <Route
-          path="/groups/:groupId"
-          element={
-            isAuthenticated ? <GroupDetailPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            isAuthenticated ? <ProfilePage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
-          }
-        />
-        <Route
-          path="/guide"
-          element={
-            isAuthenticated ? <GuidePage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
-          }
-        />
-        <Route
-          path="/contributions/:contributionId"
-          element={
-            isAuthenticated ? <ContributionDetailPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
-          }
-        />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              !isAuthenticated ? <LoginPage onAuthenticated={handleAuthenticated} /> : <Navigate to="/dashboard" replace />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              !isAuthenticated ? <RegisterPage onAuthenticated={handleAuthenticated} /> : <Navigate to="/dashboard" replace />
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              isAuthenticated ? <DashboardPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
+            }
+          />
+          <Route
+            path="/groups"
+            element={
+              isAuthenticated ? <GroupsPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
+            }
+          />
+          <Route
+            path="/groups/new"
+            element={
+              isAuthenticated ? <NewGroupPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
+            }
+          />
+          <Route
+            path="/groups/:groupId"
+            element={
+              isAuthenticated ? <GroupDetailPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              isAuthenticated ? <ProfilePage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
+            }
+          />
+          <Route
+            path="/guide"
+            element={
+              isAuthenticated ? <GuidePage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
+            }
+          />
+          <Route
+            path="/contributions/:contributionId"
+            element={
+              isAuthenticated ? <ContributionDetailPage onLoggedOut={handleLoggedOut} /> : <Navigate to="/login" replace />
+            }
+          />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Suspense>
       <ToastHost />
     </>
   );

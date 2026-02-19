@@ -483,7 +483,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
           <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">{title}</h2>
           {subtitle && <p className="text-slate-500 mt-1.5 md:mt-2 text-sm md:text-lg leading-relaxed">{subtitle}</p>}
         </header>
-        <section className="px-3 md:px-10 pb-16 md:pb-12 flex-1">
+        <section className="px-3 md:px-10 pb-[max(env(safe-area-inset-bottom),4.5rem)] md:pb-12 flex-1">
           <div className="glass-panel-strong md:rounded-2xl p-4 md:p-6 min-h-[280px] md:min-h-[400px]">
             {children}
           </div>
@@ -640,7 +640,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
         </div>
       )}
 
-      <nav className="md:hidden fixed bottom-2.5 left-1/2 -translate-x-1/2 z-40 rounded-[26px] bg-white/18 backdrop-blur-3xl border border-white/30 shadow-[0_22px_50px_-30px_rgba(15,23,42,0.5)]">
+      <nav className="md:hidden fixed bottom-[max(env(safe-area-inset-bottom),0.625rem)] left-1/2 -translate-x-1/2 z-40 rounded-[26px] bg-white/18 backdrop-blur-3xl border border-white/30 shadow-[0_22px_50px_-30px_rgba(15,23,42,0.5)]">
         <div className="grid grid-cols-4 gap-1.5 px-2.5 py-2.5 min-w-[272px]">
           {MOBILE_NAV_ITEMS.map((item) => (
             <Link

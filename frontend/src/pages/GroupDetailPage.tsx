@@ -1,6 +1,5 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
 import AppShell from '@/components/AppShell';
 import FirstUseGuide from '@/components/shared/FirstUseGuide';
 import ViewSwitcher from '@/components/shared/ViewSwitcher';
@@ -9,6 +8,8 @@ import { dashboardService } from '@/services/dashboard.service';
 import { contributionsService } from '@/services/contributions.service';
 import type { Group, GroupInvitation, GroupMember, MemberStartMode } from '@/types';
 import { isManager } from '@/lib/group';
+import { getApiErrorMessage } from '@/lib/api-error';
+import { trackEvent } from '@/lib/analytics';
 
 interface GroupDetailPageProps {
   onLoggedOut: () => void;
@@ -337,12 +338,7 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
         setPendingInvitations([]);
       }
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message;
-        setError(Array.isArray(message) ? message.join(', ') : (message ?? 'Impossible de charger le groupe'));
-      } else {
-        setError('Impossible de charger le groupe');
-      }
+      setError(getApiErrorMessage(err, 'Impossible de charger le groupe'));
       setGroup(null);
     } finally {
       setLoading(false);
@@ -370,19 +366,13 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
         email: memberEmail.trim(),
         role: memberRole,
       });
+      trackEvent('group_invitation_sent', { role: memberRole });
       setMemberEmail('');
       await loadGroup();
       setMemberFeedback({ type: 'success', message: 'Invitation envoyée. Le membre doit accepter pour rejoindre le groupe.' });
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message;
-        setMemberFeedback({
-          type: 'error',
-          message: Array.isArray(message) ? message.join(', ') : (message ?? "Impossible d'envoyer l'invitation"),
-        });
-      } else {
-        setMemberFeedback({ type: 'error', message: "Impossible d'envoyer l'invitation" });
-      }
+      trackEvent('group_invitation_failed', { role: memberRole });
+      setMemberFeedback({ type: 'error', message: getApiErrorMessage(err, "Impossible d'envoyer l'invitation") });
     }
   };
 
@@ -447,6 +437,10 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
         invitedUserIds: contributionInviteScope === 'SELECTED' ? contributionInvitedUserIds : undefined,
         invitationStartMode: contributionInvitationStartMode,
       });
+      trackEvent('contribution_create_success', {
+        frequency: contributionFrequency,
+        inviteScope: contributionInviteScope,
+      });
 
       setContributionName('');
       setContributionDescription('');
@@ -461,15 +455,14 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
       setContributionFeedback({ type: 'success', message: 'Cotisation créée avec succès.' });
       await loadGroup();
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message;
-        setContributionFeedback({
-          type: 'error',
-          message: Array.isArray(message) ? message.join(', ') : (message ?? 'Impossible de créer la cotisation.'),
-        });
-      } else {
-        setContributionFeedback({ type: 'error', message: 'Impossible de créer la cotisation.' });
-      }
+      trackEvent('contribution_create_failed', {
+        frequency: contributionFrequency,
+        inviteScope: contributionInviteScope,
+      });
+      setContributionFeedback({
+        type: 'error',
+        message: getApiErrorMessage(err, 'Impossible de créer la cotisation.'),
+      });
     } finally {
       setContributionSubmitting(false);
     }
@@ -509,6 +502,10 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
         userIds: contributionInviteUserIds,
         startMode: contributionInviteStartMode,
       });
+      trackEvent('contribution_invitation_sent', {
+        selectedCount: contributionInviteUserIds.length,
+        startMode: contributionInviteStartMode,
+      });
 
       const details: string[] = [];
       if (result.created > 0) {
@@ -530,15 +527,14 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
       });
       setContributionInviteUserIds([]);
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message;
-        setContributionInviteFeedback({
-          type: 'error',
-          message: Array.isArray(message) ? message.join(', ') : (message ?? "Impossible d'envoyer les invitations."),
-        });
-      } else {
-        setContributionInviteFeedback({ type: 'error', message: "Impossible d'envoyer les invitations." });
-      }
+      trackEvent('contribution_invitation_failed', {
+        selectedCount: contributionInviteUserIds.length,
+        startMode: contributionInviteStartMode,
+      });
+      setContributionInviteFeedback({
+        type: 'error',
+        message: getApiErrorMessage(err, "Impossible d'envoyer les invitations."),
+      });
     } finally {
       setContributionInviteSubmitting(false);
     }

@@ -1,9 +1,10 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import AppShell from '@/components/AppShell';
 import FirstUseGuide from '@/components/shared/FirstUseGuide';
 import { groupsService } from '@/services/groups.service';
+import { getApiErrorMessage } from '@/lib/api-error';
+import { trackEvent } from '@/lib/analytics';
 
 interface NewGroupPageProps {
   onLoggedOut: () => void;
@@ -38,14 +39,11 @@ export default function NewGroupPage({ onLoggedOut }: NewGroupPageProps) {
         name: name.trim(),
         description: description.trim() || undefined,
       });
+      trackEvent('group_create_success', { hasDescription: Boolean(description.trim()) });
       navigate(`/groups/${group.id}?created=1`);
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message;
-        setError(Array.isArray(message) ? message.join(', ') : (message ?? 'Impossible de créer le groupe.'));
-      } else {
-        setError('Impossible de créer le groupe.');
-      }
+      trackEvent('group_create_failed');
+      setError(getApiErrorMessage(err, 'Impossible de créer le groupe.'));
       setIsSubmitting(false);
     }
   };
