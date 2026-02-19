@@ -2,6 +2,7 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import type { Balance, Group, Payment } from '@/types';
 import AppShell from '@/components/AppShell';
+import FirstUseGuide from '@/components/shared/FirstUseGuide';
 import ViewSwitcher from '@/components/shared/ViewSwitcher';
 import { contributionsService } from '@/services/contributions.service';
 import { dashboardService } from '@/services/dashboard.service';
@@ -326,6 +327,17 @@ export default function ContributionDetailPage({ onLoggedOut }: ContributionDeta
       onLoggedOut={onLoggedOut}
     >
       <div className="space-y-4 md:space-y-6">
+        <FirstUseGuide
+          pageKey="contribution-detail"
+          title="Détail cotisation: déclaration et suivi"
+          description="Tu peux déclarer un paiement ici. Si tu es gestionnaire, tu peux aussi valider les paiements en attente."
+          bullets={[
+            'Vue simplifiée: statut perso, membres pas à jour, cagnotte collectée.',
+            'Vue détaillée: historique complet, périodes et validations.',
+            'Les notifications te ramènent ici quand une action est attendue.',
+          ]}
+        />
+
         {searchParams.get('pending') === '1' && pending.length > 0 && (
           <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
             Cette cotisation contient des paiements en attente de validation.

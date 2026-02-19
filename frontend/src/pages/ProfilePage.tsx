@@ -12,6 +12,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import AppShell from '@/components/AppShell';
+import FirstUseGuide from '@/components/shared/FirstUseGuide';
 import { authService } from '@/services/auth.service';
 import { usersService, type AdminUserAccount } from '@/services/users.service';
 import type { PasswordResetRequest } from '@/types';
@@ -226,6 +227,17 @@ export default function ProfilePage({ onLoggedOut }: ProfilePageProps) {
   return (
     <AppShell title="Profil" subtitle="Compte, identité et sécurité" onLoggedOut={onLoggedOut}>
       <section className="space-y-4 md:space-y-6">
+        <FirstUseGuide
+          pageKey="profile"
+          title="Profil: identité et sécurité"
+          description="Cette page te permet de vérifier tes informations et d'accéder aux actions de sécurité."
+          bullets={[
+            'Les données affichées viennent de ton compte actuel.',
+            'Si tu es admin, le panneau administrateur apparaît en bas.',
+            'Les réinitialisations et modification de mot de passe sont gérées par l’administrateur.',
+          ]}
+        />
+
         <div className="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-4">
           <article className="relative overflow-hidden glass-panel-strong p-4 md:p-6 bg-gradient-to-br from-white/65 via-slate-50/50 to-blue-100/40">
             <div className="absolute -top-16 -right-16 h-36 w-36 rounded-full bg-blue-100/70 blur-2xl" />

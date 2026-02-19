@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '@/components/AppShell';
+import FirstUseGuide from '@/components/shared/FirstUseGuide';
 import { useGroups } from '@/hooks/useGroups';
 import { useDashboardSummary } from '@/hooks/useDashboardSummary';
 import { isManager } from '@/lib/group';
@@ -52,6 +53,17 @@ export default function DashboardPage({ onLoggedOut }: DashboardPageProps) {
       onLoggedOut={onLoggedOut}
     >
       <div className="space-y-4 md:space-y-6">
+        <FirstUseGuide
+          pageKey="dashboard"
+          title="Dashboard: lecture rapide de ta situation"
+          description="Tu vois ici tes indicateurs principaux. Clique sur “Retard” pour ouvrir directement les groupes concernés."
+          bullets={[
+            'A cotiser ce mois: engagement estimé de tes cotisations actives.',
+            'Statut global: à jour ou retard selon ton solde consolidé.',
+            'Prochaine échéance: prochaine date cible détectée dans tes cotisations.',
+          ]}
+        />
+
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center rounded-full border border-white/60 bg-white/55 backdrop-blur-md px-2.5 py-1 text-[11px] text-slate-600">
             Données en temps réel

@@ -2,6 +2,7 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import AppShell from '@/components/AppShell';
+import FirstUseGuide from '@/components/shared/FirstUseGuide';
 import ViewSwitcher from '@/components/shared/ViewSwitcher';
 import { groupsService } from '@/services/groups.service';
 import { dashboardService } from '@/services/dashboard.service';
@@ -550,6 +551,17 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
       onLoggedOut={onLoggedOut}
     >
       <div className="space-y-4 md:space-y-6">
+        <FirstUseGuide
+          pageKey="group-detail"
+          title="Détail groupe: ton centre de pilotage"
+          description="Commence par “Votre situation”, puis vérifie le statut global des membres et les cotisations actives."
+          bullets={[
+            'Gestionnaire: tu peux inviter des membres et créer des cotisations.',
+            'Membre: tu suis ton statut et tes obligations de paiement.',
+            'La vue détaillée affiche la santé financière complète du groupe.',
+          ]}
+        />
+
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Link to="/groups" className="text-sm text-blue-600 hover:text-blue-700">
             ← Retour aux groupes

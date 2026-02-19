@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppShell from '@/components/AppShell';
+import FirstUseGuide from '@/components/shared/FirstUseGuide';
 import ViewSwitcher from '@/components/shared/ViewSwitcher';
 import { useGroups } from '@/hooks/useGroups';
 import { useDashboardSummary } from '@/hooks/useDashboardSummary';
@@ -65,6 +66,17 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
       onLoggedOut={onLoggedOut}
     >
       <div className="space-y-4 md:space-y-6">
+        <FirstUseGuide
+          pageKey="groups"
+          title="Mes groupes: vue simplifiée puis détail"
+          description="La vue simplifiée est idéale pour vérifier rapidement ton statut. Passe en vue détaillée pour piloter chaque groupe."
+          bullets={[
+            'Un clic sur un groupe ouvre son résumé complet.',
+            'Le badge retard met en avant les groupes à traiter en priorité.',
+            'Nouveau groupe est disponible dans la navigation.',
+          ]}
+        />
+
         <div className="flex items-center justify-between gap-2">
           <span className="inline-flex items-center rounded-full border border-white/60 bg-white/55 backdrop-blur-md px-2.5 py-1 text-[11px] text-slate-600">
             Données en temps réel

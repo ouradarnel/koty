@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import AppShell from '@/components/AppShell';
 import { Link } from 'react-router-dom';
 import {
@@ -16,6 +17,30 @@ type GuidePageProps = {
 };
 
 export default function GuidePage({ onLoggedOut }: GuidePageProps) {
+  const [resetMessage, setResetMessage] = useState('');
+  const userId = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('user');
+      const user = raw ? (JSON.parse(raw) as { id?: string }) : {};
+      return user.id || 'anonymous';
+    } catch {
+      return 'anonymous';
+    }
+  }, []);
+
+  const reactivateFirstUseGuides = () => {
+    const prefix = `koty:first-use:${userId}:`;
+    const keysToDelete: string[] = [];
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix)) {
+        keysToDelete.push(key);
+      }
+    }
+    keysToDelete.forEach((key) => localStorage.removeItem(key));
+    setResetMessage('Bulles de guidage réactivées. Elles réapparaîtront sur les pages concernées.');
+  };
+
   return (
     <AppShell
       title="Guide d'utilisation"
@@ -56,8 +81,19 @@ export default function GuidePage({ onLoggedOut }: GuidePageProps) {
                   <Users size={18} className="text-slate-700" />
                   Mes groupes
                 </Link>
+                <button
+                  onClick={reactivateFirstUseGuides}
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white/70 px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-white transition"
+                >
+                  Réactiver les bulles
+                </button>
               </div>
             </div>
+            {resetMessage && (
+              <p className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50/85 px-3 py-2 text-xs font-medium text-emerald-700">
+                {resetMessage}
+              </p>
+            )}
 
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="glass-surface p-4">

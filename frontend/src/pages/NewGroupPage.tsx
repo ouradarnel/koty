@@ -2,6 +2,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AppShell from '@/components/AppShell';
+import FirstUseGuide from '@/components/shared/FirstUseGuide';
 import { groupsService } from '@/services/groups.service';
 
 interface NewGroupPageProps {
@@ -56,6 +57,17 @@ export default function NewGroupPage({ onLoggedOut }: NewGroupPageProps) {
       onLoggedOut={onLoggedOut}
     >
       <section className="max-w-5xl space-y-4 md:space-y-5">
+        <FirstUseGuide
+          pageKey="new-group"
+          title="Création de groupe: étape 1"
+          description="Crée d'abord ton groupe, puis configure les membres et les cotisations depuis la page détail."
+          bullets={[
+            'Le créateur devient automatiquement gestionnaire.',
+            'Nom obligatoire, description optionnelle.',
+            'Après création, tu es redirigé vers le détail du groupe.',
+          ]}
+        />
+
         <div className="flex items-center justify-between">
           <Link to="/groups" className="text-sm text-blue-600 hover:text-blue-700">
             ← Retour à mes groupes
