@@ -118,15 +118,15 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-100">
+    <div className="min-h-[100dvh] relative overflow-hidden bg-slate-100">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-200/55 blur-3xl" />
         <div className="absolute top-1/3 right-1/4 h-56 w-56 rounded-full bg-sky-200/40 blur-3xl" />
         <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-slate-300/45 blur-3xl" />
       </div>
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
-        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-5 items-stretch">
+      <div className="relative z-10 flex min-h-[100dvh] items-center justify-center px-3 sm:px-4 py-4 sm:py-8 pb-[max(env(safe-area-inset-bottom),1rem)]">
+        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-4 sm:gap-5 items-stretch">
           <section className="hidden lg:block animate-fade-up-soft">
             <div className="h-full rounded-3xl border border-white/65 bg-gradient-to-br from-blue-600/90 via-sky-600/85 to-indigo-700/85 text-white shadow-[0_30px_70px_-40px_rgba(15,23,42,0.9)] p-7 xl:p-8">
               <p className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
@@ -159,21 +159,32 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
             </div>
           </section>
 
-          <div className="glass-panel-strong p-6 sm:p-8 animate-fade-up-soft">
-            <div className="mb-6">
+          <div className="glass-panel-strong p-4 sm:p-8 animate-fade-up-soft">
+            <div className="mb-5 sm:mb-6">
               <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
                 <img src={LogoKoty} alt="Koty Logo" className="w-8 h-8 rounded-lg object-cover" />
                 <span className="font-extrabold text-slate-900 normal-case tracking-tight">
                   Koty<span className="text-blue-600">.</span>
                 </span>
               </p>
-              <h2 className="mt-2 text-3xl font-extrabold text-slate-900 tracking-tight">Connexion</h2>
-              <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">
+              <h2 className="mt-2 text-[28px] sm:text-3xl font-extrabold text-slate-900 tracking-tight">Connexion</h2>
+              <p className="mt-1.5 text-[13px] sm:text-sm text-slate-600 leading-relaxed">
                 Accède à tes groupes, tes cotisations et tes actions en attente.
               </p>
+              <div className="mt-3 lg:hidden flex flex-wrap gap-1.5">
+                <span className="rounded-full bg-white/80 border border-slate-200 px-2 py-1 text-[11px] font-medium text-slate-700">
+                  Suivi en temps réel
+                </span>
+                <span className="rounded-full bg-white/80 border border-slate-200 px-2 py-1 text-[11px] font-medium text-slate-700">
+                  Validation rapide
+                </span>
+                <span className="rounded-full bg-white/80 border border-slate-200 px-2 py-1 text-[11px] font-medium text-slate-700">
+                  Notifications
+                </span>
+              </div>
             </div>
 
-            <form className="space-y-4" onSubmit={handleSubmit}>
+            <form className="space-y-3.5 sm:space-y-4" onSubmit={handleSubmit}>
               {notice && (
                 <div className="glass-surface p-3 text-sm text-blue-800 border-blue-200/70">
                   {notice}
@@ -186,7 +197,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
               )}
 
               <div>
-                <label htmlFor="email" className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <label htmlFor="email" className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                   Email
                 </label>
                 <div className="relative">
@@ -197,7 +208,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
                     type="email"
                     autoComplete="email"
                     required
-                    className="glass-input w-full rounded-xl pl-10 pr-3 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="glass-input w-full rounded-xl pl-10 pr-3 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="exemple@email.com"
                     value={email}
                     onChange={(e) => {
@@ -209,7 +220,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
               </div>
 
               <div>
-                <label htmlFor="password" className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <label htmlFor="password" className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                   Mot de passe
                 </label>
                 <div className="relative">
@@ -220,7 +231,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
                     required
-                    className="glass-input w-full rounded-xl pl-10 pr-10 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="glass-input w-full rounded-xl pl-10 pr-11 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Votre mot de passe"
                     value={password}
                     onChange={(e) => {
@@ -231,7 +242,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
                     aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                     title={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                   >
@@ -243,7 +254,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="mt-2 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_16px_28px_-18px_rgba(37,99,235,0.9)]"
+                className="mt-2 w-full rounded-xl bg-blue-600 px-4 py-3.5 text-base font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_16px_28px_-18px_rgba(37,99,235,0.9)]"
               >
                 {isLoading ? 'Connexion...' : 'Se connecter'}
               </button>
@@ -253,7 +264,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
                   type="button"
                   onClick={handlePasswordResetRequest}
                   disabled={resetRequestLoading}
-                  className="text-xs text-slate-500 hover:text-blue-700 disabled:opacity-60"
+                  className="text-[13px] text-slate-500 hover:text-blue-700 disabled:opacity-60"
                 >
                   {resetRequestLoading
                     ? 'Envoi de la demande...'
@@ -263,7 +274,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
             </form>
 
             <div className="mt-5 border-t border-slate-100 pt-4 text-center">
-              <Link to="/register" className="text-sm font-medium text-blue-600 hover:text-blue-700">
+              <Link to="/register" className="text-base sm:text-sm font-semibold text-blue-600 hover:text-blue-700">
                 Pas encore de compte ? S'inscrire
               </Link>
             </div>
