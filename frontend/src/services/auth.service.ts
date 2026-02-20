@@ -13,10 +13,15 @@ export const authService = {
   },
 
   logout: async (): Promise<void> => {
-    await api.post('/auth/logout');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+    try {
+      await api.post('/auth/logout');
+    } catch {
+      // Ignore backend logout errors: local session must always be cleared.
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+    }
   },
 
   getMe: async (): Promise<User> => {

@@ -54,7 +54,7 @@ export default function NewGroupPage({ onLoggedOut }: NewGroupPageProps) {
       subtitle="Crée d'abord le groupe, puis ajoute les membres et cotisations."
       onLoggedOut={onLoggedOut}
     >
-      <section className="max-w-5xl space-y-4 md:space-y-5">
+      <section className="new-group-page max-w-5xl space-y-4 md:space-y-5">
         <FirstUseGuide
           pageKey="new-group"
           title="Création de groupe: étape 1"

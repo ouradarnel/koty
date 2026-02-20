@@ -14,6 +14,18 @@ const api = axios.create({
   },
 });
 
+let sessionExpiredHandled = false;
+
+function isAuthRequest(url?: string): boolean {
+  if (!url) return false;
+  return (
+    url.includes('/auth/login') ||
+    url.includes('/auth/register') ||
+    url.includes('/auth/refresh') ||
+    url.includes('/auth/logout')
+  );
+}
+
 // Request interceptor to add token
 api.interceptors.request.use(
   (config) => {
@@ -33,8 +45,10 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const requestUrl = originalRequest?.url as string | undefined;
+    const shouldSkipRefresh = isAuthRequest(requestUrl);
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !shouldSkipRefresh && !originalRequest?._retry) {
       originalRequest._retry = true;
 
       try {
@@ -55,12 +69,15 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        localStorage.setItem('auth_error', 'Session expirée, reconnecte-toi.');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        emitToast({ type: 'error', message: 'Session expirée. Merci de te reconnecter.' });
-        window.location.href = '/login';
+        if (!sessionExpiredHandled) {
+          sessionExpiredHandled = true;
+          localStorage.setItem('auth_error', 'Session expirée, reconnecte-toi.');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          emitToast({ type: 'error', message: 'Session expirée. Merci de te reconnecter.' });
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       }
     }

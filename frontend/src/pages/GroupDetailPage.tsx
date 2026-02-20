@@ -140,15 +140,15 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
     const amount = Math.abs(resume.personalBalance).toFixed(2);
     if (resume.personalStatus === 'RETARD') {
       return {
-        label: `Retard de ${amount}$`,
-        hint: 'Tu dois régulariser ta contribution.',
+        label: `Retard de ${amount}`,
+        hint: 'Tu dois régulariser ton solde sur les cotisations actives.',
         className: 'text-red-700',
       };
     }
     if (resume.personalStatus === 'AVANCE') {
       return {
-        label: `En avance de ${amount}$`,
-        hint: 'Ton avance couvrira les prochaines périodes.',
+        label: `En avance de ${amount}`,
+        hint: 'Ton avance couvre les prochaines périodes à venir.',
         className: 'text-emerald-700',
       };
     }
@@ -546,7 +546,11 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
       subtitle={group?.description || 'Détails du groupe'}
       onLoggedOut={onLoggedOut}
     >
-      <div className="space-y-4 md:space-y-6">
+      <div
+        className={`group-detail-page space-y-3 md:space-y-6 ${
+          simpleView ? '' : 'detail-theme detail-theme-bg rounded-3xl p-3 md:p-5'
+        }`}
+      >
         <FirstUseGuide
           pageKey="group-detail"
           title="Détail groupe: ton centre de pilotage"
@@ -559,7 +563,7 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
         />
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <Link to="/groups" className="text-sm text-blue-600 hover:text-blue-700">
+          <Link to="/groups" className="text-xs md:text-sm text-blue-600 hover:text-blue-700">
             ← Retour aux groupes
           </Link>
           <div className="flex items-center gap-2">
@@ -595,9 +599,9 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
         {loading && <div className="glass-surface px-3 py-2 text-sm text-slate-600">Chargement...</div>}
 
         {!loading && group && (
-          <section className="glass-panel-strong p-4 bg-gradient-to-r from-white/60 via-slate-50/50 to-blue-100/40">
+          <section className="glass-panel-strong p-3.5 md:p-4 bg-gradient-to-r from-white/60 via-slate-50/50 to-blue-100/40">
             <p className="text-[11px] uppercase tracking-wide text-slate-500">Votre situation</p>
-            <p className={`mt-1 text-2xl font-bold ${personalSituation.className}`}>{personalSituation.label}</p>
+            <p className={`mt-1 text-xl md:text-2xl font-bold ${personalSituation.className}`}>{personalSituation.label}</p>
             <p className="text-xs text-slate-600 mt-1">{personalSituation.hint}</p>
           </section>
         )}
@@ -614,27 +618,27 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
         )}
 
         {!loading && group && simpleView && !resumeLoading && (
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="glass-panel p-4">
-              <p className="text-xs uppercase text-slate-500">Statut global membres</p>
-              {resume.membersStatusAvailable ? (
-                <div className="space-y-1 mt-1 text-sm">
-                  <p className="text-slate-900 font-semibold">À jour: {resume.membersOnTime}</p>
-                  <p className="text-red-700 font-semibold">Pas à jour: {resume.membersLate}</p>
-                  <p className="text-emerald-700 font-semibold">En avance: {resume.membersAhead}</p>
-                </div>
-              ) : (
-                <p className="text-xs text-slate-500 mt-1">Disponible en vue gestionnaire</p>
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-2.5 md:gap-4">
+              <div className="glass-panel p-3.5 md:p-4">
+                <p className="text-xs uppercase text-slate-500">Statut global membres</p>
+                {resume.membersStatusAvailable ? (
+                  <div className="space-y-1 mt-1 text-sm">
+                    <p className="text-slate-900 font-semibold">À jour: {resume.membersOnTime}</p>
+                    <p className="text-red-700 font-semibold">En retard: {resume.membersLate}</p>
+                    <p className="text-emerald-700 font-semibold">En avance: {resume.membersAhead}</p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 mt-1">Disponible en vue gestionnaire</p>
               )}
             </div>
-            <div className="glass-panel p-4">
+            <div className="glass-panel p-3.5 md:p-4">
               <p className="text-xs uppercase text-slate-500">Collecté / Attendu</p>
               <p className="text-xl font-bold text-slate-900 mt-1">
                 {resume.collectedTotal.toFixed(2)} / {resume.expectedTotal.toFixed(2)}
               </p>
               <p className="text-xs text-slate-500 mt-1">Objectif mensuel estimé: {totals.monthlyTarget.toFixed(2)}</p>
             </div>
-            <div className="glass-panel p-4">
+            <div className="glass-panel p-3.5 md:p-4">
               <p className="text-xs uppercase text-slate-500">Suivi rapide</p>
               <p className="text-sm text-slate-700 mt-1">Membres actifs: {totals.membersCount}</p>
               <p className="text-sm text-slate-700">Cotisations actives: {totals.contributionCount}</p>
@@ -645,31 +649,31 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
 
         {!loading && group && !simpleView && (
           <>
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-              <div className="glass-panel p-4">
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 md:gap-4">
+              <div className="glass-panel p-3.5 md:p-4">
                 <p className="text-xs uppercase text-slate-500">Membres</p>
                 <p className="text-2xl font-bold text-slate-900">{totals.membersCount}</p>
               </div>
-              <div className="glass-panel p-4">
+              <div className="glass-panel p-3.5 md:p-4">
                 <p className="text-xs uppercase text-slate-500">Cotisations</p>
                 <p className="text-2xl font-bold text-slate-900">{totals.contributionCount}</p>
               </div>
-              <div className="glass-panel p-4">
+              <div className="glass-panel p-3.5 md:p-4">
                 <p className="text-xs uppercase text-slate-500">Attendu total</p>
                 <p className="text-xl font-bold text-slate-900">{resume.expectedTotal.toFixed(2)}</p>
               </div>
-              <div className="glass-panel p-4">
+              <div className="glass-panel p-3.5 md:p-4">
                 <p className="text-xs uppercase text-slate-500">Collecté total</p>
                 <p className="text-xl font-bold text-emerald-700">{resume.collectedTotal.toFixed(2)}</p>
               </div>
-              <div className="glass-panel p-4">
+              <div className="glass-panel p-3.5 md:p-4">
                 <p className="text-xs uppercase text-slate-500">Écart global</p>
                 <p className={`text-xl font-bold ${resume.collectedTotal - resume.expectedTotal < 0 ? 'text-red-700' : 'text-emerald-700'}`}>
                   {(resume.collectedTotal - resume.expectedTotal).toFixed(2)}
                 </p>
               </div>
-              <div className="glass-panel p-4">
-                <p className="text-xs uppercase text-slate-500">En attente / Invitations</p>
+              <div className="glass-panel p-3.5 md:p-4">
+                <p className="text-xs uppercase text-slate-500">Paiements / invitations en attente</p>
                 <p className="text-xl font-bold text-amber-700">{resume.pendingPayments} / {pendingInvitations.length}</p>
               </div>
             </section>
@@ -724,7 +728,7 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
                       <p className="font-semibold text-slate-900">{resume.membersOnTime}</p>
                     </div>
                     <div className="rounded-lg bg-red-50 px-3 py-2 text-sm">
-                      <p className="text-red-500">Pas à jour</p>
+                      <p className="text-red-500">En retard</p>
                       <p className="font-semibold text-red-700">{resume.membersLate}</p>
                     </div>
                     <div className="rounded-lg bg-emerald-50 px-3 py-2 text-sm">
@@ -738,7 +742,6 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
                         {resume.membersHealth.filter((member) => member.status === 'RETARD').slice(0, 5).map((member) => (
                           <div key={member.userId} className="rounded-lg border px-2.5 py-2">
                             <p className="text-sm font-medium text-slate-900">{member.name}</p>
-                            <p className="text-[11px] text-slate-500">{member.email}</p>
                             <p className="text-xs font-semibold text-red-700 mt-1">{member.balance.toFixed(2)}</p>
                           </div>
                         ))}
@@ -867,7 +870,7 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
                     <h2 className="text-lg font-semibold text-slate-900">Membres</h2>
                     <p className="text-xs text-slate-500">
                       {membersListOpen
-                        ? `${displayedMembers.length} affiche(s) sur ${group.members.length}`
+                        ? `${displayedMembers.length} affiché(s) sur ${group.members.length}`
                         : `${group.members.length} membre(s)`}
                     </p>
                   </div>
@@ -1233,7 +1236,7 @@ export default function GroupDetailPage({ onLoggedOut }: GroupDetailPageProps) {
                           <div key={invitation.id} className="glass-surface px-2.5 py-2 text-xs">
                             <div className="flex items-center justify-between gap-2">
                               <p className="font-medium text-slate-900 truncate">{invitation.email}</p>
-                              <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 text-[10px]">PENDING</span>
+                              <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 text-[10px]">EN ATTENTE</span>
                             </div>
                             <p className="text-slate-600 mt-1">{getRoleLabel(invitation.role)}</p>
                           </div>

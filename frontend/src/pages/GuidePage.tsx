@@ -47,7 +47,7 @@ export default function GuidePage({ onLoggedOut }: GuidePageProps) {
       subtitle="Les étapes essentielles, de la création d'un groupe jusqu'à la validation des paiements."
       onLoggedOut={onLoggedOut}
     >
-      <div className="space-y-6">
+      <div className="guide-page space-y-6">
         <section className="relative overflow-hidden rounded-3xl border border-white/65 bg-white/55 backdrop-blur-2xl shadow-[0_22px_55px_-35px_rgba(15,23,42,0.65)]">
           <div className="pointer-events-none absolute -top-20 -right-20 h-56 w-56 rounded-full bg-gradient-to-br from-sky-400/35 via-blue-600/25 to-indigo-500/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-gradient-to-br from-emerald-400/20 via-cyan-400/18 to-sky-500/18 blur-3xl" />
@@ -60,7 +60,7 @@ export default function GuidePage({ onLoggedOut }: GuidePageProps) {
                   Les bases pour bien démarrer, sans te perdre dans les détails.
                 </h3>
                 <p className="mt-2 text-sm text-slate-600 leading-relaxed max-w-2xl">
-                  Koty est organisé en 2 niveaux: <span className="font-medium text-slate-800">un groupe</span>, puis une ou plusieurs{' '}
+                  Koty est organisé en deux niveaux: <span className="font-medium text-slate-800">un groupe</span>, puis une ou plusieurs{' '}
                   <span className="font-medium text-slate-800">cotisations</span> (caisses) dans ce groupe. On participe à une cotisation
                   uniquement si on y est invité et qu'on accepte.
                 </p>
@@ -320,7 +320,7 @@ export default function GuidePage({ onLoggedOut }: GuidePageProps) {
                   <div>
                     <p className="text-sm font-semibold text-slate-900">Mot de passe</p>
                     <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                      Les réinitialisations et modification de mot de passe sont gérées par l'administrateur.
+                      Les réinitialisations et modifications de mot de passe sont gérées par l'administrateur.
                     </p>
                   </div>
                 </div>

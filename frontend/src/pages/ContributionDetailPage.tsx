@@ -68,7 +68,7 @@ function statusClass(status: Payment['status']) {
 
 function statusLabel(status: Payment['status']) {
   if (status === 'APPROVED') return 'Approuvé';
-  if (status === 'DECLARED') return 'Déclaré';
+  if (status === 'DECLARED') return 'En attente';
   if (status === 'REJECTED') return 'Refusé';
   return 'Direct';
 }
@@ -331,13 +331,13 @@ export default function ContributionDetailPage({ onLoggedOut }: ContributionDeta
       }`}
       onLoggedOut={onLoggedOut}
     >
-      <div className="space-y-4 md:space-y-6">
+      <div className={`contribution-page space-y-4 md:space-y-6 ${simpleView ? '' : 'detail-theme detail-theme-bg rounded-3xl p-3 md:p-5'}`}>
         <FirstUseGuide
           pageKey="contribution-detail"
           title="Détail cotisation: déclaration et suivi"
           description="Tu peux déclarer un paiement ici. Si tu es gestionnaire, tu peux aussi valider les paiements en attente."
           bullets={[
-            'Vue simplifiée: statut perso, membres pas à jour, cagnotte collectée.',
+            'Vue simplifiée: statut perso, membres en retard, cagnotte collectée.',
             'Vue détaillée: historique complet, périodes et validations.',
             'Les notifications te ramènent ici quand une action est attendue.',
           ]}
@@ -369,7 +369,7 @@ export default function ContributionDetailPage({ onLoggedOut }: ContributionDeta
               </p>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="text-[11px] uppercase tracking-wide text-slate-500">Membres pas à jour</p>
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">Membres en retard</p>
               <p className="text-2xl font-bold text-slate-900 mt-1">{simplified.membersNotUpToDate}</p>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -475,7 +475,7 @@ export default function ContributionDetailPage({ onLoggedOut }: ContributionDeta
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-slate-700">URL preuve (optionnel)</label>
+                      <label className="text-sm text-slate-700">Lien de preuve (optionnel)</label>
                       <input
                         type="text"
                         value={proofUrl}
@@ -488,7 +488,7 @@ export default function ContributionDetailPage({ onLoggedOut }: ContributionDeta
                       disabled={submitting}
                       className="w-full bg-blue-600 text-white rounded-xl py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-60"
                     >
-                      {submitting ? 'Envoi...' : 'Déclarer (statut DECLARED)'}
+                      {submitting ? 'Envoi...' : 'Déclarer le paiement'}
                     </button>
                   </form>
                 </div>

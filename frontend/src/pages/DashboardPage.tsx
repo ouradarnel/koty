@@ -48,24 +48,24 @@ export default function DashboardPage({ onLoggedOut }: DashboardPageProps) {
 
   return (
     <AppShell
-      title="Dashboard"
-      subtitle={`Bonjour ${user.name || 'Utilisateur'}, pilotage global de tes cotisations`}
+      title="Tableau de bord"
+      subtitle={`Bonjour ${user.name || 'Utilisateur'}, voici l'état global de tes cotisations`}
       onLoggedOut={onLoggedOut}
     >
-      <div className="space-y-4 md:space-y-6">
+      <div className="dashboard-page space-y-3 md:space-y-6">
         <FirstUseGuide
           pageKey="dashboard"
-          title="Dashboard: lecture rapide de ta situation"
-          description="Tu vois ici tes indicateurs principaux. Clique sur “Retard” pour ouvrir directement les groupes concernés."
+          title="Tableau de bord: lecture rapide de ta situation"
+          description="Tu vois ici les indicateurs principaux. Clique sur « Retard » pour ouvrir directement les groupes concernés."
           bullets={[
-            'A cotiser ce mois: engagement estimé de tes cotisations actives.',
+            'Volume du mois: estimation globale de tes cotisations actives.',
             'Statut global: à jour ou retard selon ton solde consolidé.',
             'Prochaine échéance: prochaine date cible détectée dans tes cotisations.',
           ]}
         />
 
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-full border border-white/60 bg-white/55 backdrop-blur-md px-2.5 py-1 text-[11px] text-slate-600">
+          <span className="inline-flex items-center rounded-full border border-white/60 bg-white/55 backdrop-blur-md px-2.5 py-1 text-[10px] md:text-[11px] text-slate-600">
             Données en temps réel
           </span>
         </div>
@@ -88,13 +88,13 @@ export default function DashboardPage({ onLoggedOut }: DashboardPageProps) {
         )}
 
         {!groupsLoading && !summaryLoading && (
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <article className="glass-panel p-4">
-              <p className="text-[11px] uppercase tracking-wide text-slate-500">A cotiser ce mois</p>
-              <p className="mt-1 text-2xl font-bold text-slate-900">{monthlyDue.toFixed(2)}</p>
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-2.5 md:gap-3">
+            <article className="glass-panel p-3.5 md:p-4">
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">Volume du mois</p>
+              <p className="mt-1 text-xl md:text-2xl font-bold text-slate-900">{monthlyDue.toFixed(2)}</p>
             </article>
 
-            <article className="glass-panel p-4">
+            <article className="glass-panel p-3.5 md:p-4">
               <p className="text-[11px] uppercase tracking-wide text-slate-500">Statut global</p>
               <button
                 onClick={() => {
@@ -102,26 +102,26 @@ export default function DashboardPage({ onLoggedOut }: DashboardPageProps) {
                     setShowDelayedGroups((prev) => !prev);
                   }
                 }}
-                className={`mt-1 text-2xl font-bold ${
+                className={`mt-1 text-xl md:text-2xl font-bold ${
                   summary.isUpToDate ? 'text-emerald-700 cursor-default' : 'text-red-700 hover:underline'
                 }`}
                 disabled={summary.isUpToDate}
                 title={summary.isUpToDate ? 'Aucun retard' : 'Afficher les groupes en retard'}
               >
-                {summary.isUpToDate ? 'A jour' : 'Retard'}
+                {summary.isUpToDate ? 'À jour' : 'Retard'}
               </button>
             </article>
 
-            <article className="glass-panel p-4">
+            <article className="glass-panel p-3.5 md:p-4">
               <p className="text-[11px] uppercase tracking-wide text-slate-500">Prochaine échéance</p>
-              <p className="mt-1 text-2xl font-bold text-blue-700">{nextDue}</p>
+              <p className="mt-1 text-xl md:text-2xl font-bold text-blue-700">{nextDue}</p>
             </article>
           </section>
         )}
 
         {!groupsLoading && !summaryLoading && showDelayedGroups && (
           <section className="glass-panel p-4">
-            <h3 className="text-sm font-semibold text-slate-900 mb-2">Groupes où tu es en retard</h3>
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">Groupes où ton solde est en retard</h3>
             {delayedGroups.length === 0 ? (
               <p className="text-sm text-slate-600">Aucun retard détecté.</p>
             ) : (
@@ -139,38 +139,38 @@ export default function DashboardPage({ onLoggedOut }: DashboardPageProps) {
           </section>
         )}
 
-        <section className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="glass-panel p-4">
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 md:gap-3">
+          <div className="glass-panel p-3.5 md:p-4">
             <p className="text-[11px] uppercase tracking-wide text-slate-500">Mes groupes</p>
-            <p className="mt-1 text-2xl font-bold text-slate-900">{groups.length}</p>
+            <p className="mt-1 text-xl md:text-2xl font-bold text-slate-900">{groups.length}</p>
           </div>
-          <div className="glass-panel p-4">
+          <div className="glass-panel p-3.5 md:p-4">
             <p className="text-[11px] uppercase tracking-wide text-slate-500">Cotisations actives</p>
-            <p className="mt-1 text-2xl font-bold text-slate-900">{contributions}</p>
+            <p className="mt-1 text-xl md:text-2xl font-bold text-slate-900">{contributions}</p>
           </div>
-          <div className="glass-panel p-4">
+          <div className="glass-panel p-3.5 md:p-4">
             <p className="text-[11px] uppercase tracking-wide text-slate-500">Groupes gérés</p>
-            <p className="mt-1 text-2xl font-bold text-slate-900">{managerGroups}</p>
+            <p className="mt-1 text-xl md:text-2xl font-bold text-slate-900">{managerGroups}</p>
           </div>
         </section>
 
-        <section className="glass-panel-strong p-5 bg-gradient-to-r from-white/60 to-blue-100/45">
-          <h3 className="text-lg font-semibold text-slate-900">Vue d'ensemble</h3>
+        <section className="glass-panel-strong p-4 md:p-5 bg-gradient-to-r from-white/60 to-blue-100/45">
+          <h3 className="text-base md:text-lg font-semibold text-slate-900">Vue d'ensemble</h3>
           <p className="text-sm text-slate-600 mt-1.5">
             Gère tes groupes, consulte les soldes par cotisation et traite les paiements en attente.
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
             <Link
               to="/groups"
-              className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+              className="inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
             >
               Ouvrir mes groupes
             </Link>
             <Link
               to="/groups"
-              className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-50"
+              className="inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-50"
             >
-              Voir les cotisations
+              Consulter les cotisations
             </Link>
           </div>
         </section>

@@ -32,10 +32,6 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
     () => new Map(delayedGroups.map((group) => [group.groupId, group.balance])),
     [delayedGroups],
   );
-  const monthlyCommitment = visibleGroups.reduce(
-    (sum, group) => sum + (group.contributions ?? []).reduce((acc, contribution) => acc + Number(contribution.amount), 0),
-    0,
-  );
   const monthlyTargetByMembers = visibleGroups.reduce(
     (sum, group) =>
       sum +
@@ -49,7 +45,7 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
     const map = new Map<string, number>();
     visibleGroups.forEach((group) => {
       (group.contributions ?? []).forEach((contribution) => {
-        const currency = contribution.currency || 'N/A';
+        const currency = contribution.currency || 'N/D';
         const current = map.get(currency) ?? 0;
         map.set(currency, current + Number(contribution.amount));
       });
@@ -65,7 +61,7 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
       subtitle={`Bienvenue ${user.name || 'Utilisateur'}. Cette page regroupe tous les groupes liés à ton compte.`}
       onLoggedOut={onLoggedOut}
     >
-      <div className="space-y-4 md:space-y-6">
+      <div className={`groups-page space-y-3 md:space-y-6 ${simpleView ? '' : 'detail-theme detail-theme-bg rounded-3xl p-3 md:p-5'}`}>
         <FirstUseGuide
           pageKey="groups"
           title="Mes groupes: vue simplifiée puis détail"
@@ -73,12 +69,12 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
           bullets={[
             'Un clic sur un groupe ouvre son résumé complet.',
             'Le badge retard met en avant les groupes à traiter en priorité.',
-            'Nouveau groupe est disponible dans la navigation.',
+            'Le bouton « Nouveau groupe » est disponible dans la navigation.',
           ]}
         />
 
         <div className="flex items-center justify-between gap-2">
-          <span className="inline-flex items-center rounded-full border border-white/60 bg-white/55 backdrop-blur-md px-2.5 py-1 text-[11px] text-slate-600">
+          <span className="inline-flex items-center rounded-full border border-white/60 bg-white/55 backdrop-blur-md px-2.5 py-1 text-[10px] md:text-[11px] text-slate-600">
             Données en temps réel
           </span>
           <ViewSwitcher simpleView={simpleView} onToggle={() => setSimpleView((prev) => !prev)} />
@@ -87,20 +83,20 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
         {error && <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">{error}</div>}
 
         {simpleView && (
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <article className="glass-panel p-4">
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-2.5 md:gap-3">
+            <article className="glass-panel p-3.5 md:p-4">
               <p className="text-[11px] uppercase tracking-wide text-slate-500">Mon statut</p>
-              <p className={`mt-1 text-2xl font-bold ${summary.isUpToDate ? 'text-emerald-700' : 'text-red-700'}`}>
-                {summary.isUpToDate ? 'A jour partout' : 'Retards détectés'}
+              <p className={`mt-1 text-xl md:text-2xl font-bold ${summary.isUpToDate ? 'text-emerald-700' : 'text-red-700'}`}>
+                {summary.isUpToDate ? 'À jour partout' : 'Retards détectés'}
               </p>
             </article>
-            <article className="glass-panel p-4">
-              <p className="text-[11px] uppercase tracking-wide text-slate-500">Groupes pas à jour</p>
-              <p className="mt-1 text-2xl font-bold text-slate-900">{summary.groupsNotUpToDate}</p>
+            <article className="glass-panel p-3.5 md:p-4">
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">Groupes en retard</p>
+              <p className="mt-1 text-xl md:text-2xl font-bold text-slate-900">{summary.groupsNotUpToDate}</p>
             </article>
-            <article className="glass-panel p-4">
+            <article className="glass-panel p-3.5 md:p-4">
               <p className="text-[11px] uppercase tracking-wide text-slate-500">Groupes gérés</p>
-              <p className="mt-1 text-2xl font-bold text-slate-900">{managerGroups}</p>
+              <p className="mt-1 text-xl md:text-2xl font-bold text-slate-900">{managerGroups}</p>
             </article>
           </section>
         )}
@@ -117,7 +113,7 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
                 <p className="mt-1 text-2xl font-bold text-slate-900">{totalContributions}</p>
               </div>
               <div className="glass-panel p-4">
-                <p className="text-[11px] uppercase tracking-wide text-slate-500">Rôles gestionnaire</p>
+                <p className="text-[11px] uppercase tracking-wide text-slate-500">Groupes gérés</p>
                 <p className="mt-1 text-2xl font-bold text-slate-900">{managerGroups}</p>
               </div>
               <div className="glass-panel p-4">
@@ -131,10 +127,6 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
                 <p className={`mt-1 text-2xl font-bold ${groupsWithoutContribution > 0 ? 'text-amber-700' : 'text-slate-900'}`}>
                   {groupsWithoutContribution}
                 </p>
-              </div>
-              <div className="glass-panel p-4">
-                <p className="text-[11px] uppercase tracking-wide text-slate-500">Engagement mensuel</p>
-                <p className="mt-1 text-2xl font-bold text-blue-700">{monthlyCommitment.toFixed(2)}</p>
               </div>
             </section>
 
@@ -200,11 +192,11 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
                         <p className="font-semibold text-slate-900">{managerGroups}</p>
                       </div>
                       <div className="rounded-xl bg-slate-50 px-3 py-2">
-                        <p className="text-slate-500">Groupes membre</p>
+                        <p className="text-slate-500">Groupes en tant que membre</p>
                         <p className="font-semibold text-slate-900">{memberOnlyGroups}</p>
                       </div>
                       <div className="rounded-xl bg-slate-50 px-3 py-2">
-                        <p className="text-slate-500">Objectif mensuel estimé</p>
+                        <p className="text-slate-500">Volume mensuel estimé</p>
                         <p className="font-semibold text-slate-900">{monthlyTargetByMembers.toFixed(2)}</p>
                       </div>
                     </div>
@@ -335,7 +327,7 @@ export default function GroupsPage({ onLoggedOut }: GroupsPageProps) {
                               to={`/contributions/${group.contributions?.[0].id}`}
                               className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50"
                             >
-                              Voir une cotisation
+                              Ouvrir une cotisation
                             </Link>
                           )}
                         </div>

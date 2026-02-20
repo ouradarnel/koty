@@ -44,14 +44,25 @@ interface NavItem {
   exact?: boolean;
 }
 
+function getMobileNavLabel(item: NavItem): string {
+  if (item.to === '/groups') return 'Groupes';
+  if (item.to === '/dashboard') return 'Tableau';
+  return item.label;
+}
+
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard, exact: true },
+  { label: 'Tableau de bord', to: '/dashboard', icon: LayoutDashboard, exact: true },
   { label: 'Mes groupes', to: '/groups', icon: Users },
-  { label: 'Guide', to: '/guide', icon: BookOpen, exact: true },
   { label: 'Profil', to: '/profile', icon: User, exact: true },
 ];
 
-const MOBILE_NAV_ITEMS: NavItem[] = NAV_ITEMS;
+const GUIDE_NAV_ITEM: NavItem = { label: 'Guide', to: '/guide', icon: BookOpen, exact: true };
+
+const MOBILE_NAV_ITEMS: NavItem[] = [
+  { label: 'Tableau de bord', to: '/dashboard', icon: LayoutDashboard, exact: true },
+  { label: 'Mes groupes', to: '/groups', icon: Users },
+  { label: 'Profil', to: '/profile', icon: User, exact: true },
+];
 
 export default function AppShell({ title, subtitle, onLoggedOut, children }: AppShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -204,9 +215,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
   }, [refreshNotifications, location.pathname]);
 
   useEffect(() => {
-    if (notificationCount > 0) {
-      setInvitationOpen(true);
-    } else {
+    if (notificationCount === 0) {
       setInvitationOpen(false);
     }
   }, [notificationCount]);
@@ -295,7 +304,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
           className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-slate-100 transition"
           aria-label="Ouvrir la navigation"
         >
-          <img src={LogoKoty} alt="Koty Logo" className="w-8 h-8 rounded-xl object-cover" />
+          <img src={LogoKoty} alt="Logo Koty" className="w-8 h-8 rounded-xl object-cover" />
           <span className="font-extrabold text-[13px] tracking-tight text-slate-900">
             Koty<span className="text-blue-600">.</span>
           </span>
@@ -367,6 +376,18 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
               </Link>
             </nav>
             <div className="p-2 border-t border-slate-200/70 bg-white/35">
+              <Link
+                to={GUIDE_NAV_ITEM.to}
+                onClick={() => setMobileOpen(false)}
+                className={`mb-1.5 flex items-center gap-1.5 w-full px-2 py-1.5 text-[12px] rounded-lg transition-colors ${
+                  isActive(GUIDE_NAV_ITEM)
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <GUIDE_NAV_ITEM.icon size={14} />
+                {GUIDE_NAV_ITEM.label}
+              </Link>
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-1.5 w-full px-2 py-1.5 text-[12px] text-red-500 font-medium hover:bg-red-50 rounded-lg transition-colors"
@@ -388,7 +409,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
           <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : 'px-2'}`}>
             <img
               src={LogoKoty}
-              alt="Koty Logo"
+              alt="Logo Koty"
               className={`${collapsed ? 'w-10 h-10' : 'w-8 h-8'} transition-all duration-300 hover:scale-110`}
             />
             {!collapsed && (
@@ -468,6 +489,13 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
               <UserCircle size={24} />
             </div>
           )}
+          <Link
+            to={GUIDE_NAV_ITEM.to}
+            className={`mb-2 flex items-center justify-center gap-2 w-full py-2 rounded-lg border border-slate-200/70 bg-white/70 text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/80 transition-all ${collapsed ? 'px-0' : 'px-3'}`}
+          >
+            <GUIDE_NAV_ITEM.icon size={18} />
+            {!collapsed && <span className="text-sm font-medium">{GUIDE_NAV_ITEM.label}</span>}
+          </Link>
           <button
             onClick={handleLogout}
             className={`flex items-center justify-center gap-2 w-full py-2 rounded-lg border border-slate-200/70 bg-white/70 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50/80 transition-all ${collapsed ? 'px-0' : 'px-3'}`}
@@ -641,7 +669,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
       )}
 
       <nav className="md:hidden fixed bottom-[max(env(safe-area-inset-bottom),0.625rem)] left-1/2 -translate-x-1/2 z-40 rounded-[26px] bg-white/18 backdrop-blur-3xl border border-white/30 shadow-[0_22px_50px_-30px_rgba(15,23,42,0.5)]">
-        <div className="grid grid-cols-4 gap-1.5 px-2.5 py-2.5 min-w-[272px]">
+        <div className="grid grid-cols-3 gap-1.5 px-2.5 py-2.5 min-w-[220px]">
           {MOBILE_NAV_ITEMS.map((item) => (
             <Link
               key={item.to}
@@ -653,7 +681,7 @@ export default function AppShell({ title, subtitle, onLoggedOut, children }: App
               }`}
             >
               <item.icon size={22} />
-              <span className="text-[12px] leading-none mt-0.5">{item.label.split(' ')[0]}</span>
+              <span className="text-[12px] leading-none mt-0.5">{getMobileNavLabel(item)}</span>
               {item.to === '/groups' && pendingGroupsActionCount > 0 && (
                 <span className="absolute top-1 right-1 inline-flex min-w-[16px] h-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] text-white">
                   {pendingGroupsActionCount > 9 ? '9+' : pendingGroupsActionCount}

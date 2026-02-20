@@ -16,6 +16,9 @@ interface LoginPageLocationState {
   notice?: string;
 }
 
+const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL ?? 'demo@koty.local';
+const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD ?? 'KotyDemo123!';
+
 export default function LoginPage({ onAuthenticated }: LoginPageProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,25 +56,38 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
     navigate(location.pathname, { replace: true, state: null });
   }, [location.pathname, location.state, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const performLogin = async (targetEmail: string, targetPassword: string, mode: 'manuel' | 'demo') => {
     setError('');
+    setNotice('');
     setIsLoading(true);
 
     try {
-      const response = await authService.login(email, password);
-      trackEvent('auth_login_success', { emailDomain: email.split('@')[1] || '' });
+      const response = await authService.login(targetEmail.trim(), targetPassword);
+      trackEvent(mode === 'demo' ? 'auth_login_demo_success' : 'auth_login_success', {
+        emailDomain: targetEmail.split('@')[1] || '',
+      });
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
       localStorage.setItem('user', JSON.stringify(response.user));
       onAuthenticated();
       navigate('/dashboard');
     } catch (err: unknown) {
-      trackEvent('auth_login_failed', { emailDomain: email.split('@')[1] || '' });
+      trackEvent(mode === 'demo' ? 'auth_login_demo_failed' : 'auth_login_failed', {
+        emailDomain: targetEmail.split('@')[1] || '',
+      });
       setError(getApiErrorMessage(err, 'Échec de la connexion'));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await performLogin(email, password, 'manuel');
+  };
+
+  const handleDemoLogin = async () => {
+    await performLogin(DEMO_EMAIL, DEMO_PASSWORD, 'demo');
   };
 
   const canSubmit = email.trim().length > 0 && password.length > 0 && !isLoading;
@@ -99,7 +115,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
   };
 
   return (
-    <div className="min-h-[100dvh] relative overflow-hidden bg-slate-100">
+    <div className="login-page min-h-[100dvh] relative overflow-hidden bg-slate-100">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-200/55 blur-3xl" />
         <div className="absolute top-1/3 right-1/4 h-56 w-56 rounded-full bg-sky-200/40 blur-3xl" />
@@ -111,7 +127,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
           <section className="hidden lg:block animate-fade-up-soft">
             <div className="h-full rounded-3xl border border-white/65 bg-gradient-to-br from-blue-600/90 via-sky-600/85 to-indigo-700/85 text-white shadow-[0_30px_70px_-40px_rgba(15,23,42,0.9)] p-7 xl:p-8">
               <p className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
-                <img src={LogoKoty} alt="Koty Logo" className="w-5 h-5 rounded-md object-cover bg-white/90" />
+                <img src={LogoKoty} alt="Logo Koty" className="w-5 h-5 rounded-md object-cover bg-white/90" />
                 Bienvenue sur Koty
               </p>
               <h1 className="mt-4 text-3xl xl:text-4xl font-extrabold tracking-tight leading-tight">
@@ -143,7 +159,7 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
           <div className="glass-panel-strong p-4 sm:p-8 animate-fade-up-soft">
             <div className="mb-5 sm:mb-6">
               <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
-                <img src={LogoKoty} alt="Koty Logo" className="w-8 h-8 rounded-lg object-cover" />
+                <img src={LogoKoty} alt="Logo Koty" className="w-8 h-8 rounded-lg object-cover" />
                 <span className="font-extrabold text-slate-900 normal-case tracking-tight">
                   Koty<span className="text-blue-600">.</span>
                 </span>
@@ -239,6 +255,24 @@ export default function LoginPage({ onAuthenticated }: LoginPageProps) {
               >
                 {isLoading ? 'Connexion...' : 'Se connecter'}
               </button>
+
+              <div className="glass-surface p-3 border-slate-200/80">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Compte test public</p>
+                <p className="mt-1 text-xs text-slate-700">
+                  Utilise ce compte pour tester rapidement l'application.
+                </p>
+                <p className="mt-1 text-[11px] text-slate-500 truncate">
+                  {DEMO_EMAIL}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => void handleDemoLogin()}
+                  disabled={isLoading}
+                  className="mt-2 w-full rounded-lg bg-emerald-600 px-2.5 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
+                >
+                  Connexion test
+                </button>
+              </div>
 
               <div className="text-center">
                 <button

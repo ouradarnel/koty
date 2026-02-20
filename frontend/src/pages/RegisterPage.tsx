@@ -83,7 +83,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
   };
 
   return (
-    <div className="min-h-[100dvh] relative overflow-hidden bg-slate-100 px-3 sm:px-6 lg:px-8 py-4 sm:py-12 pb-[max(env(safe-area-inset-bottom),1rem)]">
+    <div className="register-page min-h-[100dvh] relative overflow-hidden bg-slate-100 px-3 sm:px-6 lg:px-8 py-4 sm:py-12 pb-[max(env(safe-area-inset-bottom),1rem)]">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-200/50 blur-3xl" />
         <div className="absolute top-1/3 right-1/4 h-56 w-56 rounded-full bg-sky-200/35 blur-3xl" />
@@ -92,7 +92,7 @@ export default function RegisterPage({ onAuthenticated }: RegisterPageProps) {
       <div className="relative z-10 max-w-md w-full space-y-6 mx-auto">
         <div>
           <p className="flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
-            <img src={LogoKoty} alt="Koty Logo" className="w-8 h-8 rounded-lg object-cover" />
+            <img src={LogoKoty} alt="Logo Koty" className="w-8 h-8 rounded-lg object-cover" />
             <span className="font-extrabold text-slate-900 normal-case tracking-tight">
               Koty<span className="text-blue-600">.</span>
             </span>
